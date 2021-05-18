@@ -13,8 +13,9 @@ library(textstem)
 library(tidytext)
 library(tidyverse)
 library(pluralize)
+library(naniar)
 library(data.table)
-
+library(purrr)
 ```
 
 cleaning data 
@@ -59,30 +60,32 @@ corpus_clean <- corpus_raw %>%
   
 print(corpus_clean)
 
-corpus_clean <- corpus_clean %>%
+corpus_clean1 <- corpus_clean %>%
   filter(!word1 %in% stop_words$word) %>%
   filter(!word2 %in% stop_words$word) %>% 
   unite(word, word1, word2, sep = " ")
 
-print(corpus_clean)
+print(corpus_clean1)
 ```
 visualize
 ```{r}
 
-corpus_clean$word <- singularize(corpus_clean$word)
+corpus_clean1$word <- singularize(corpus_clean1$word)
 
-corpus_clean <- corpus_clean %>%
+corpus_clean1 <- corpus_clean1 %>%
   group_by(proposal_title) %>%
   count(word, sort = TRUE) 
 ```
 
 flipping word and n
 ```{r}
-corpus_clean <- corpus_clean %>%
+corpus_clean <- corpus_clean1 %>%
   pivot_wider(names_from = word, values_from = n)
 
 corpus_clean
-# remove cols with 4 NAs needs to be adjusted
+# set keyword amount to NA if it is below a certain threshold
+corpus_clean <- corpus_clean %>% replace_with_na_all(condition = ~.x == 1 )
+# remove cols with less then 2 NAs 
 visualize <- corpus_clean[, which(colMeans(!is.na(corpus_clean)) > 1/length(corpus_clean$proposal_title))]
 visualize
 ```
@@ -94,7 +97,6 @@ visualize_matrix[is.na((visualize_matrix))] <- 0
 visualize_matrix[visualize_matrix != 0] <- 1 
 
 visualize_matrix <- as.matrix(visualize_matrix)
-print(class(visualize_matrix))
 contengency_table_matrix <- visualize_matrix %*%  t(visualize_matrix)
 # set diagonal to -1
 diag(contengency_table_matrix) <- -1
@@ -113,15 +115,37 @@ contengency_table  <- setnames(contengency_table, old = colnames(contengency_tab
 most_related_articles <- colnames(contengency_table)[apply(contengency_table,1,which.max)]
 similar_articles <- tibble(corpus_clean$proposal_title, most_related_articles, max_values)
 
-colnames(similar_articles) <- c("article", "most_similar_article", "common_words")
+colnames(similar_articles) <- c("proposal_title", "most_similar_proposal", "common_words")
    
 print(similar_articles)
 
 contengency_table <- contengency_table %>%
   add_column(corpus_clean$proposal_title)
 ```
-trying to find similarity with kmeans with kmeans
+
 ```{r}
-# corpus_clean
-corpus_raw
+visualize_long <- visualize %>% 
+  pivot_longer(!proposal_title, names_to = "keywords", values_to = "count") %>%
+  drop_na() %>%
+  select(proposal_title, keywords)
+
+visualize_long <- visualize_long %>% group_by(proposal_title) %>%
+  summarise(
+     alltypes = paste(keywords, collapse=", "))
+
+results <- merge(similar_articles, visualize_long, by='proposal_title' )
+results <- merge(results, visualize_long, by.x = "most_similar_proposal", by.y = "proposal_title" )
+
+# similar_articles %>% arrange(article) %>% add_column(test = visualize_long$alltypes) %>% arrange(most_related_articles) %>% add_column(test2 = visualize_long$alltypes)
+
+
+# common_words <- pmap(list(similar_articles_ordered_by_articles$common_words, similar_articles_ordered_by_most_similar_articles$common_words), intersect)
+# print(common_words)
+
+# write.csv(visualize_long, 'visualize_long.csv')
+# 
+# 
+# pmap(list(w1, w2), intersect)
+
+
 ```
