@@ -1,0 +1,127 @@
+---
+title: "similarity_checker"
+author: "Roberto Lentini"
+date: "17/05/2021"
+output: html_document
+---
+
+
+```{r}
+library(pdftools)
+require(readtext)
+library(textstem)
+library(tidytext)
+library(tidyverse)
+library(pluralize)
+library(data.table)
+
+```
+
+cleaning data 
+
+```{r}
+file.list <- list.files(path = "proposals")
+#  checking if files are pdf ext
+grepl(".pdf", file.list)
+
+# testing for a single article
+corpus_raw <- data.frame("file_name" = c(),"text" = c()) 
+
+document_text_list <- pdf_text("proposals/ReiforcementLearningInFinance.pdf") 
+document <- paste(document_text_list, collapse=', ' )
+# document <- data.frame("file_name" = gsub(x ='ReiforcementLearningInFinance.pdf',pattern = ".pdf", replacement = ""), "text" = document_text, stringsAsFactors = FALSE)
+```
+
+investigation text
+
+```{r}
+corpus_raw <- data.frame("proposal_title" = c(),"text" = c())
+
+for (i in 1:length(file.list)){
+print(i)
+ document_page_list <-pdf_text(paste("proposals/", file.list[i],sep = "")) 
+ document_page_list_no_num <- gsub('[0-9]+', '', document_page_list)
+ document <- paste(document_page_list_no_num, collapse=', ' )%>% strsplit("\n")-> document_text
+data.frame("proposal_title" = gsub(x =file.list[i],pattern = ".pdf", replacement = ""), 
+ "text" = document_text, stringsAsFactors = FALSE) -> document
+
+colnames(document) <- c("proposal_title", "text")
+corpus_raw <- rbind(corpus_raw,document) 
+}
+```
+tokenization 
+```{r}
+data(stop_words)
+
+corpus_clean <- corpus_raw %>%
+  unnest_tokens(word, text, token = "ngrams", n = 2)%>%
+  separate(word, c("word1", "word2"), sep = " ")
+  
+print(corpus_clean)
+
+corpus_clean <- corpus_clean %>%
+  filter(!word1 %in% stop_words$word) %>%
+  filter(!word2 %in% stop_words$word) %>% 
+  unite(word, word1, word2, sep = " ")
+
+print(corpus_clean)
+```
+visualize
+```{r}
+
+corpus_clean$word <- singularize(corpus_clean$word)
+
+corpus_clean <- corpus_clean %>%
+  group_by(proposal_title) %>%
+  count(word, sort = TRUE) 
+```
+
+flipping word and n
+```{r}
+corpus_clean <- corpus_clean %>%
+  pivot_wider(names_from = word, values_from = n)
+
+corpus_clean
+# remove cols with 4 NAs needs to be adjusted
+visualize <- corpus_clean[, which(colMeans(!is.na(corpus_clean)) > 1/length(corpus_clean$proposal_title))]
+visualize
+```
+
+creating an index to quantify similarity
+```{r}
+visualize_matrix <- subset(visualize, select = -c(proposal_title) )
+visualize_matrix[is.na((visualize_matrix))] <- 0
+visualize_matrix[visualize_matrix != 0] <- 1 
+
+visualize_matrix <- as.matrix(visualize_matrix)
+print(class(visualize_matrix))
+contengency_table_matrix <- visualize_matrix %*%  t(visualize_matrix)
+# set diagonal to -1
+diag(contengency_table_matrix) <- -1
+# list of max values
+max_values <- apply(contengency_table_matrix,1,max)
+
+# get list of max values ie. most similar 
+# contengency_table_matrix[is.na((contengency_table_matrix))] <- -1
+# print(apply(contengency_table_matrix,1, max))
+diag(contengency_table_matrix) <- NA
+# for visual
+contengency_table <- as.tibble(contengency_table_matrix)
+contengency_table  <- setnames(contengency_table, old = colnames(contengency_table), corpus_clean$proposal_title)
+
+# list of most related articles
+most_related_articles <- colnames(contengency_table)[apply(contengency_table,1,which.max)]
+similar_articles <- tibble(corpus_clean$proposal_title, most_related_articles, max_values)
+
+colnames(similar_articles) <- c("article", "most_similar_article", "common_words")
+   
+print(similar_articles)
+
+contengency_table <- contengency_table %>%
+  add_column(corpus_clean$proposal_title)
+```
+trying to find similarity with kmeans with kmeans
+```{r}
+# corpus_clean
+corpus_raw
+```
