@@ -27,10 +27,6 @@ grepl(".pdf", file.list)
 
 # testing for a single article
 corpus_raw <- data.frame("file_name" = c(),"text" = c()) 
-
-document_text_list <- pdf_text("proposals/ReiforcementLearningInFinance.pdf") 
-document <- paste(document_text_list, collapse=', ' )
-# document <- data.frame("file_name" = gsub(x ='ReiforcementLearningInFinance.pdf',pattern = ".pdf", replacement = ""), "text" = document_text, stringsAsFactors = FALSE)
 ```
 
 investigation text
@@ -53,6 +49,8 @@ corpus_raw <- rbind(corpus_raw,document)
 tokenization 
 ```{r}
 data(stop_words)
+custom_bigram_stop_words <- c('university press', 'citing article', 'https www.tandfonline.com')
+custom_stop_words <- c('copyright', 'https')
 
 corpus_clean <- corpus_raw %>%
   unnest_tokens(word, text, token = "ngrams", n = 2)%>%
@@ -61,9 +59,10 @@ corpus_clean <- corpus_raw %>%
 print(corpus_clean)
 
 corpus_clean1 <- corpus_clean %>%
-  filter(!word1 %in% stop_words$word) %>%
-  filter(!word2 %in% stop_words$word) %>% 
-  unite(word, word1, word2, sep = " ")
+  filter(!word1 %in% c(stop_words$word, custom_stop_words)) %>%
+  filter(!word2 %in% c(stop_words$word, custom_stop_words)) %>% 
+  unite(word, word1, word2, sep = " ") %>%
+  filter(!word %in% custom_bigram_stop_words)
 
 print(corpus_clean1)
 ```
@@ -92,9 +91,20 @@ visualize
 
 creating an index to quantify similarity
 ```{r}
+#  giving the amount of keywords a weight
 visualize_matrix <- subset(visualize, select = -c(proposal_title) )
 visualize_matrix[is.na((visualize_matrix))] <- 0
-visualize_matrix[visualize_matrix != 0] <- 1 
+# visualize_matrix[visualize_matrix != 0] <- 1
+
+visualize_matrix[1 < visualize_matrix & visualize_matrix <= 5] <- 1
+visualize_matrix[5 < visualize_matrix & visualize_matrix <= 10] <- 2
+visualize_matrix[10 < visualize_matrix & visualize_matrix <= 20] <- 3
+visualize_matrix[20 < visualize_matrix & visualize_matrix] <- 4
+
+
+# visualize_matrix[30 < visualize_matrix & visualize_matrix < 40] <- 4 
+# visualize_matrix[40 < visualize_matrix & visualize_matrix < 50] <- 5 
+# visualize_matrix[50 < visualize_matrix ] <- 6 
 
 visualize_matrix <- as.matrix(visualize_matrix)
 contengency_table_matrix <- visualize_matrix %*%  t(visualize_matrix)
@@ -115,7 +125,7 @@ contengency_table  <- setnames(contengency_table, old = colnames(contengency_tab
 most_related_articles <- colnames(contengency_table)[apply(contengency_table,1,which.max)]
 similar_articles <- tibble(corpus_clean$proposal_title, most_related_articles, max_values)
 
-colnames(similar_articles) <- c("proposal_title", "most_similar_proposal", "common_words")
+colnames(similar_articles) <- c("proposal_title", "most_similar_proposal", "common_words_weighted")
    
 print(similar_articles)
 
@@ -136,13 +146,28 @@ visualize_long <- visualize_long %>% group_by(proposal_title) %>%
 results <- merge(similar_articles, visualize_long, by='proposal_title' )
 results <- merge(results, visualize_long, by.x = "most_similar_proposal", by.y = "proposal_title" )
 
+s <- strsplit(results$alltypes.x , split = ", ")
+a <- strsplit(results$alltypes.y , split = ", ")
+
+common_words_list = vector('list', length(s))
+for (i in 1:length(s)) {
+  common_words <- pmap(list(s[i], a[i]), intersect)
+  common_words_list[[i]] <- common_words
+}
+
+results <- results %>%
+  add_column(common_words_list)
+  
+results <- results %>% 
+  select(proposal_title, most_similar_proposal, common_words, common_words_list)
+
 # similar_articles %>% arrange(article) %>% add_column(test = visualize_long$alltypes) %>% arrange(most_related_articles) %>% add_column(test2 = visualize_long$alltypes)
 
 
 # common_words <- pmap(list(similar_articles_ordered_by_articles$common_words, similar_articles_ordered_by_most_similar_articles$common_words), intersect)
 # print(common_words)
 
-# write.csv(visualize_long, 'visualize_long.csv')
+# write.csv(results, 'results.csv')
 # 
 # 
 # pmap(list(w1, w2), intersect)
