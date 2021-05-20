@@ -50,7 +50,7 @@ tokenization
 ```{r}
 data(stop_words)
 custom_bigram_stop_words <- c('university press', 'citing article', 'https www.tandfonline.com')
-custom_stop_words <- c('copyright', 'https')
+custom_stop_words <- c('copyright', 'https', 'NA')
 
 corpus_clean <- corpus_raw %>%
   unnest_tokens(word, text, token = "ngrams", n = 2)%>%
@@ -159,7 +159,7 @@ results <- results %>%
   add_column(common_words_list)
   
 results <- results %>% 
-  select(proposal_title, most_similar_proposal, common_words, common_words_list)
+  select(proposal_title, most_similar_proposal, common_words_weighted, common_words_list)
 
 # similar_articles %>% arrange(article) %>% add_column(test = visualize_long$alltypes) %>% arrange(most_related_articles) %>% add_column(test2 = visualize_long$alltypes)
 
