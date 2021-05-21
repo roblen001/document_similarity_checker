@@ -7,12 +7,38 @@
 # Date: 2021-05-20
 #
 # ========================================================================================
-# source('helpers/getSimilarProposal.R')
+source('helpers/getSimilarProposal.R')
 
 # TODO: do i give people the ability to add keywords to the stop_words df
+# This will take a certain row from similar articles dataframe and style it
+getHTML <- function (pdfFileName) {
+  ptag1 = '<p>'
+  pWithContent = paste(ptag1, pdfFileName)
+  html = paste(pWithContent, '</p>')
+  return(html)
+}
+
+
+
+getHTML_Keywords <- function (words) {
+  inner_html = '<div>'
+  for (word in words) {
+    ptag1 = paste('<div style="background-color: #81D3EA; border-radius: 15px;"><p>', word)
+    ptag2 = paste(ptag1, '</p></div>')
+    divcontent = paste(ptag1, ptag2)
+    print(divcontent)
+    inner_html = paste(inner_html, divcontent)
+  }
+  html = paste(inner_html, '</div>')
+  return(html)
+}
 
 backend <- function(input, output, session){
-  
+  # creating empty state
+  full_proposal_path <- reactiveVal()
+  fileName <- reactiveVal()
+  commonKeyWords <- reactiveVal('')
+
   # Computer volumes depend on OS: Windows, Mac, or Linux.
   volumes <- c(Home = fs::path_home(), getVolumes()())
   
@@ -60,9 +86,38 @@ backend <- function(input, output, session){
   
   # submit button
   observeEvent(input$BeginCheck, {
-    similar_proposal_df <- getSimilarProposal(dirPath = "proposals")
-    print(similar_proposal_df)
-    print('che')
+    # TODO: somehow store this path globally to be used multiple times
+    # TODO: switch with parseDirPath
+    # storing full proposal path as string to variable
+    root = gsub("\\*|\\(|\\)","",as.character(input$dirProposals$root))
+    path = input$dirProposals$path
+    proposal_path = paste(path, collapse='/' )
+    full_proposal_path(paste(root, proposal_path, sep = ''))
+    # getting selected file name
+    file_path =  parseFilePaths(volumes, input$proposalFile)
+    selectedFile <- gsub("\\..*","",file_path$name)
+    similar_proposal <- getSimilarProposal(dirPath = full_proposal_path(), selectedFile=selectedFile)
+    fileName(similar_proposal[2])
+    commonKeyWords(unlist(similar_proposal[4]))
   })
-
+  
+  # renders the most similar file name in the div button
+  output$pdfFileName <- renderUI ({
+    HTML(getHTML(fileName()))
+  })
+  
+  # renders common keywords
+  output$Keywords <- renderUI ({
+    HTML(getHTML_Keywords(commonKeyWords()))
+  })
+  
+  # open most similar pdf file 
+  # TODO: extract the file path programatically
+  observeEvent(input$openPDF, {
+    # storing full proposal path as string to variable
+    full_file_path = paste(paste(full_proposal_path(), fileName(), sep='/'), '.pdf', sep='')
+    
+    file.show(file.path(full_file_path))
+  })
+  
 }

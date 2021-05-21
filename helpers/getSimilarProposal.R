@@ -4,7 +4,7 @@
 # proposal file.
 #
 # Output: A list containing the name of the most simlar pdf and a list of
-# keywords that are commong between both proposals
+# keywords that are common between both proposals
 # 
 # Author: Roberto Lentini (rlentini@research.baycrest.org)
 #
@@ -22,14 +22,16 @@ library(data.table)
 library(purrr)
 
 
-getSimilarProposal <- function(dirPath) {
-
+getSimilarProposal <- function(dirPath='', selectedFile='') {
+  if (dirPath == '') {
+    # do nothing
+  } else {
   corpus_raw <- getPDFContent(dirPath)
   
   custom_bigram_stop_words <- c('university press', 'citing article', 'https www.tandfonline.com')
   custom_stop_words <- c('copyright', 'https', 'NA', 'doi')
   
-  # Will return a wid format dataframe with proposals as rows, words as columns
+  # Will return a wide format dataframe with proposals as rows, words as columns
   # and occurence of keywords in the proposal (NA means none)
   corpus_cleaned <- getCleanedAndTokenizedData(corpus_raw, custom_bigram_stop_words, custom_stop_words)
   #  giving the amount of keywords a weight
@@ -60,8 +62,9 @@ getSimilarProposal <- function(dirPath) {
   colnames(similar_articles) <- c("proposal_title", "most_similar_proposal", "common_words_weighted")
 
   similar_articles_with_common_word_lst <- getCommonKeywords(corpus_cleaned, similar_articles)
-  
-  return(similar_articles_with_common_word_lst)
+  results <- similar_articles_with_common_word_lst %>% filter(proposal_title == selectedFile)
+  return(results)
+  }
 }
 
 

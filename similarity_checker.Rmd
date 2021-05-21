@@ -21,7 +21,7 @@ library(purrr)
 cleaning data 
 
 ```{r}
-file.list <- list.files(path = "proposals")
+file.list <- list.files(path = 'C:/document_similarity_checker/proposals')
 #  checking if files are pdf ext
 grepl(".pdf", file.list)
 
@@ -173,4 +173,12 @@ results <- results %>%
 # pmap(list(w1, w2), intersect)
 
 
+```
+
+```{r}
+test <- results %>% filter(proposal_title == 'Estimated transmissibility and impact of SARS-CoV-2')
+l <- unlist(test[4])
+for (keyword in l) {
+  print(keyword)
+}
 ```

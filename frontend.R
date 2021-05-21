@@ -55,14 +55,23 @@ frontend <- function(){
             padding-right: 5vh',
       width = 6,
       # pdf information container
+      
       fluidRow( style='height: 30%;',
                 tags$h4('Most Similar Proposal Information:'),
-                tags$div(style='background-color: white; height: 100%; border: 1px solid grey;')
+                tags$div(style='background-color: white; height: 100%; border: 1px solid grey;',
+                         actionButton(inputId ="openPDF", style="background-color: #81D3EA; width: 100%; display: flex;
+                                  justify-content: flex-start; padding-top: 3%; padding-bottom: 2%;",
+                                  label = uiOutput("pdfFileName")
+                                  ),
+                         ),
+
       ),
       # keywords container
       fluidRow( style='height: 40%; margin-top: 5vh;',
                 tags$h4('Common Keywords:'),
-                tags$div(style='background-color: white; height: 100%; border: 1px solid grey;')
+                tags$div(style='background-color: white; height: 100%; border: 1px solid grey;',
+                column(width=12, uiOutput('Keywords'))
+                         )
       ),
       )
     )
