@@ -97,11 +97,13 @@ backend <- function(input, output, session){
     root = gsub("\\*|\\(|\\)","",as.character(input$dirProposals$root))
     path = input$dirProposals$path
     proposal_path = paste(path, collapse='/' )
-    full_proposal_path(paste(root, proposal_path, sep = ''))
+    # full_proposal_path(paste(root, proposal_path, sep = ''))
+    full_proposal_path =  parseDirPath(volumes, input$dirProposals)
+    full_proposal_path(full_proposal_path)
     # getting selected file name
     file_path =  parseFilePaths(volumes, input$proposalFile)
     selectedFile <- gsub("\\..*","",file_path$name)
-    similar_proposal <- getSimilarProposal(dirPath = full_proposal_path(), selectedFile=selectedFile)
+    similar_proposal <- getSimilarProposal(dirPath = full_proposal_path, selectedFile=selectedFile)
     fileName(similar_proposal[2])
     commonKeyWords(unlist(similar_proposal[4]))
   })

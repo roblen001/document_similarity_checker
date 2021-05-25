@@ -23,12 +23,14 @@ library(purrr)
 
 
 getSimilarProposal <- function(dirPath='', selectedFile='') {
+  print(selectedFile)
+  print(dirPath)
   if (dirPath == '') {
     # do nothing
   } else {
   corpus_raw <- getPDFContent(dirPath)
   
-  custom_bigram_stop_words <- c('university press', 'citing article', 'https www.tandfonline.com')
+  custom_bigram_stop_words <- c('university press', 'citing article', 'https www.tandfonline.com', 'NA NA')
   custom_stop_words <- c('copyright', 'https', 'NA', 'doi')
   
   # Will return a wide format dataframe with proposals as rows, words as columns
