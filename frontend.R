@@ -69,8 +69,8 @@ frontend <- function(){
       # keywords container
       fluidRow( style='height: 40%; margin-top: 5vh;',
                 tags$h4('Common Keywords:'),
-                tags$div(style='background-color: white; height: 100%; border: 1px solid grey;',
-                column(width=12, uiOutput('Keywords'))
+                tags$div(style='height: 100%; border: 1px solid grey; overflow: scroll; background-color: white;',
+                uiOutput('Keywords')
                          )
       ),
       )

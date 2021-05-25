@@ -9,11 +9,17 @@
 # ========================================================================================
 source('helpers/getSimilarProposal.R')
 
-# TODO: do i give people the ability to add keywords to the stop_words df
+# TODO: do I give people the ability to add keywords to the stop_words df
 # This will take a certain row from similar articles dataframe and style it
 getHTML <- function (pdfFileName) {
+  if (nchar(pdfFileName) > 45){
+    indexed <- substr(pdfFileName, start = 1, stop = 45)
+    new_name <- paste(indexed, '...')
+  } else {
+    new_name <- pdfFileName
+  }
   ptag1 = '<p>'
-  pWithContent = paste(ptag1, pdfFileName)
+  pWithContent = paste(ptag1, new_name)
   html = paste(pWithContent, '</p>')
   return(html)
 }
@@ -21,13 +27,12 @@ getHTML <- function (pdfFileName) {
 
 
 getHTML_Keywords <- function (words) {
-  inner_html = '<div>'
+  inner_html = '<div display: flex; flex-direction: row; flex-wrap: wrap;>'
   for (word in words) {
-    ptag1 = paste('<div style="background-color: #81D3EA; border-radius: 15px;"><p>', word)
+    ptag1 = paste('<div style="background-color: #81D3EA; border-radius: 15px; 
+                  padding: 5px 3px 3px 3px; margin: 3px 3px 3px 3px; display: inline-block;"><p>', word)
     ptag2 = paste(ptag1, '</p></div>')
-    divcontent = paste(ptag1, ptag2)
-    print(divcontent)
-    inner_html = paste(inner_html, divcontent)
+    inner_html = paste(inner_html, ptag2)
   }
   html = paste(inner_html, '</div>')
   return(html)

@@ -165,11 +165,6 @@ getCommonKeywords <- function(visualize, similar_articles) {
 
 
 
-similar_articles_df <- getSimilarProposal()
-
-print((similar_articles_df[similar_articles_df$proposal_title == 'Configuration, Deployment, and Running the Bot', ][2]))
-
-
 
 
 

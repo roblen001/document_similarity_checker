@@ -45,6 +45,7 @@ data.frame("proposal_title" = gsub(x =file.list[i],pattern = ".pdf", replacement
 colnames(document) <- c("proposal_title", "text")
 corpus_raw <- rbind(corpus_raw,document) 
 }
+corpus_raw
 ```
 tokenization 
 ```{r}
@@ -80,13 +81,15 @@ flipping word and n
 ```{r}
 corpus_clean <- corpus_clean1 %>%
   pivot_wider(names_from = word, values_from = n)
-
 corpus_clean
 # set keyword amount to NA if it is below a certain threshold
 corpus_clean <- corpus_clean %>% replace_with_na_all(condition = ~.x == 1 )
-# remove cols with less then 2 NAs 
+corpus_clean
+colnames(corpus_clean)
+print('visualize ==============================')
+
+# remove cols with less then 2 NAs
 visualize <- corpus_clean[, which(colMeans(!is.na(corpus_clean)) > 1/length(corpus_clean$proposal_title))]
-visualize
 ```
 
 creating an index to quantify similarity
