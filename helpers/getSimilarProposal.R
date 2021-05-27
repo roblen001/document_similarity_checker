@@ -21,6 +21,10 @@ library(naniar)
 library(data.table)
 library(purrr)
 
+# custom functions
+source('helpers/getPDFContent.R')
+source('helpers/getCleanedAndTokenizedData.R')
+source('helpers/getCommonKeywords.R')
 
 getSimilarProposal <- function(dirPath='', selectedFile='') {
   if (dirPath == '') {
@@ -33,7 +37,7 @@ getSimilarProposal <- function(dirPath='', selectedFile='') {
   
   # Will return a wide format dataframe with proposals as rows, words as columns
   # and occurence of keywords in the proposal (NA means none)
-  corpus_cleaned <- getCleanedAndTokenizedData(corpus_raw, custom_bigram_stop_words, custom_stop_words)
+  corpus_cleaned <- getCleanedAndTokenizedData(corpus_raw, custom_bigram_stop_words, custom_stop_words, type='PublishedPapers')
   #  giving the amount of keywords a weight
   visualize_matrix <- subset(corpus_cleaned, select = -c(proposal_title) )
   visualize_matrix[is.na((visualize_matrix))] <- 0
@@ -66,106 +70,6 @@ getSimilarProposal <- function(dirPath='', selectedFile='') {
   return(results)
   }
 }
-
-
-# ALL HELPER FUNCTIONS IN getSimilarProposals ARE BELOW ========================
-
-# GET PDF CONTENT ===================================================================
-# Helper Function: 
-#   -Extract content from proposal pdfs
-#   -Returns: Dataframe with proposal titles and text as a string 
-getPDFContent <- function(proposalPath) {
-  file.list <- list.files(path = proposalPath)
-  #  grabs files with .pdf extensions
-  grepl(".pdf", file.list)
-
-    # going through proposals and extracting text
-  corpus_raw <- data.frame("proposal_title" = c(),"text" = c())
-  for (i in 1:length(file.list)){
-    document_page_list <-pdf_text(paste("proposals/", file.list[i],sep = "")) 
-    document_page_list_no_num <- gsub('[0-9]+', '', document_page_list)
-    document <- paste(document_page_list_no_num, collapse=', ' )%>% strsplit("\n")-> document_text
-    data.frame("proposal_title" = gsub(x =file.list[i],pattern = ".pdf", replacement = ""), 
-               "text" = document_text, stringsAsFactors = FALSE) -> document
-    
-    colnames(document) <- c("proposal_title", "text")
-    corpus_raw <- rbind(corpus_raw,document) 
-  }
-  return(corpus_raw)
-}
-
-# TOKENIZE AND CLEAN TEXT ===================================================================
-# Helper Function: 
-#   -Takes a dataframe with srting of content (ie proposal text) and turns it into usable data
-#   -Returns: Dataframe with proposal titles and the amount of key words in the
-#    keywords found in each article (NA means none were found)
-getCleanedAndTokenizedData <- function(corpus_raw ,custom_bigram_stop_words, custom_stop_words) {
-  data(stop_words)
-  
-  corpus_clean <- corpus_raw %>%
-    unnest_tokens(word, text, token = "ngrams", n = 2)%>%
-    separate(word, c("word1", "word2"), sep = " ") %>%
-    filter(!word1 %in% c(stop_words$word, custom_stop_words)) %>%
-    filter(!word2 %in% c(stop_words$word, custom_stop_words)) %>% 
-    unite(word, word1, word2, sep = " ") %>%
-    filter(!word %in% custom_bigram_stop_words)
-  
-
-  corpus_clean$word <- singularize(corpus_clean$word)
-  
-  corpus_clean <- corpus_clean %>%
-    group_by(proposal_title) %>%
-    count(word, sort = TRUE) 
-  
-  corpus_clean <- corpus_clean %>%
-    pivot_wider(names_from = word, values_from = n)
-    # set keyword amount to NA if it is below a certain threshold
-  corpus_clean <- corpus_clean %>% replace_with_na_all(condition = ~.x == 1 )
-  # remove cols with less then 2 NAs 
-  visualize <- corpus_clean[, which(colMeans(!is.na(corpus_clean)) > 1/length(corpus_clean$proposal_title))]
-  
-  return(visualize)
-}
-
-# CREATE LIST OF COMMON KEYWORDS ===================================================================
-# Helper Function: 
-#   -Takes results from getCleanedAndTokenizedData() 
-#   -Returns: The dataframe of similar articles but with common keywords list appended
-#   to it
-getCommonKeywords <- function(visualize, similar_articles) {
-  visualize_long <- visualize %>% 
-    pivot_longer(!proposal_title, names_to = "keywords", values_to = "count") %>%
-    drop_na() %>%
-    select(proposal_title, keywords)
-  
-  visualize_long <- visualize_long %>% group_by(proposal_title) %>%
-    summarise(
-      alltypes = paste(keywords, collapse=", "))
-  
-  results <- merge(similar_articles, visualize_long, by='proposal_title' )
-  results <- merge(results, visualize_long, by.x = "most_similar_proposal", by.y = "proposal_title" )
-  
-  s <- strsplit(results$alltypes.x , split = ", ")
-  a <- strsplit(results$alltypes.y , split = ", ")
-  
-  common_words_list = vector('list', length(s))
-  for (i in 1:length(s)) {
-    common_words <- pmap(list(s[i], a[i]), intersect)
-    common_words_list[[i]] <- common_words
-  }
-  
-  results <- results %>%
-    add_column(common_words_list)
-  
-  results <- results %>% 
-    select(proposal_title, most_similar_proposal, common_words_weighted, common_words_list)
- 
-  return(results)
-}
-
-
-
-
 
 
 

@@ -8,6 +8,7 @@
 #
 # ========================================================================================
 source('helpers/getSimilarProposal.R')
+source('helpers/getSimilarProposalsFromCSV.R')
 
 # TODO: do I give people the ability to add keywords to the stop_words df
 # This will take a certain row from similar articles dataframe and style it
@@ -43,6 +44,7 @@ backend <- function(input, output, session){
   full_proposal_path <- reactiveVal()
   fileName <- reactiveVal()
   commonKeyWords <- reactiveVal('')
+  selectedFilePath <- reactiveVal('')
   # Computer volumes depend on OS: Windows, Mac, or Linux.
   volumes <- c(Home = fs::path_home(), getVolumes()())
   
@@ -53,22 +55,22 @@ backend <- function(input, output, session){
   shinyFileChoose(input, id = "proposalFile", roots = volumes, filetypes = c("pdf"))
   output$proposalFileOutput <- renderText("No proposal file selected.")
   
-  shinyFileChoose(input, id = "proposalDataFrame", roots = volumes, filetypes = c("csv"))
-  output$proposalFileOutput <- renderText("No proposal dataframe file selected.")
-  # 
+  shinyFileChoose(input, id = "DataframeProposalFile", roots = volumes, filetypes = c("csv"))
+  output$DataframeProposalFileOutput <- renderText("No proposal dataframe file selected.")
+
   #  FOR OTHER PROPOSAL SELECTION INPUT TYPE
   # 1) Select file containing proposal dataframe
   observeEvent(
-    input$proposalDataFrame, {
-      proposalDFPath <- parseDirPath(volumes, input$proposalDataFrame)
+    input$DataframeProposalFile, {
+      proposalDFPath <- parseDirPath(volumes, input$DataframeProposalFile)
 
       # Reset output when selection of directory is canceled.
-      output$dirProposalsOutput <- renderText("No directory selected.")
+      output$DataframeProposalFileOutput <- renderText("No file selected.")
 
       # Otherwise if directory has been selected, print path of directory to screen.
       if (length(proposalDFPath) > 0){
         # Update output by printing new directory path.
-        output$dirProposalsOutput <- renderPrint(proposalDFPath)
+        output$DataframeProposalFileOutput <- renderPrint(proposalDFPath)
       }
     }
   )
@@ -82,7 +84,7 @@ backend <- function(input, output, session){
       
       # Reset output when selection of directory is canceled.
       output$dirProposalsOutput <- renderText("No directory selected.")
-      
+      print(length(dirPath))
       # Otherwise if directory has been selected, print path of directory to screen.
       if (length(dirPath) > 0){
         # Update output by printing new directory path.
@@ -97,7 +99,7 @@ backend <- function(input, output, session){
       proposalFileFilePath <- parseFilePaths(volumes, input$proposalFile)
 
       # Reset output when selection of transfer ID file is canceled.
-      output$proposalFileOutput <- renderText("No transfer ID file selected.")
+      output$proposalFileOutput <- renderText("No file selected.")
 
       # Otherwise if proposal file has been selected, print path of proposal file
       # to screen.
@@ -110,22 +112,33 @@ backend <- function(input, output, session){
   
   # submit button
   observeEvent(input$BeginCheck, {
-    # show loading screen
-    shinyjs::show("loading_page")
-    # storing full proposal path as string to variable
-    root = gsub("\\*|\\(|\\)","",as.character(input$dirProposals$root))
-    path = input$dirProposals$path
-    proposal_path = paste(path, collapse='/' )
-    # full_proposal_path(paste(root, proposal_path, sep = ''))
-    full_proposal_path =  parseDirPath(volumes, input$dirProposals)
-    full_proposal_path(full_proposal_path)
-    # getting selected file name
-    file_path =  parseFilePaths(volumes, input$proposalFile)
-    selectedFile <- gsub("\\..*","",file_path$name)
-    similar_proposal <- getSimilarProposal(dirPath = full_proposal_path, selectedFile=selectedFile)
-    fileName(similar_proposal[2])
-    commonKeyWords(unlist(similar_proposal[4]))
-    load_data()
+    if (input$selectionType == 'PublishedResearch'){
+      # show loading screen
+      shinyjs::show("loading_page")
+      # storing full proposal path as string to variable
+      root = gsub("\\*|\\(|\\)","",as.character(input$dirProposals$root))
+      path = input$dirProposals$path
+      proposal_path = paste(path, collapse='/' )
+      full_proposal_path =  parseDirPath(volumes, input$dirProposals)
+      full_proposal_path(full_proposal_path)
+      # getting selected file name
+      file_path =  parseFilePaths(volumes, input$proposalFile)
+      selectedFilePath(file_path$datapath)
+      selectedFile <- gsub("\\..*","",file_path$name)
+      similar_proposal <- getSimilarProposal(dirPath = full_proposal_path, selectedFile=selectedFile)
+      fileName(similar_proposal[2])
+      commonKeyWords(unlist(similar_proposal[4]))
+      load_data()
+    } else if (input$selectionType == 'OtherProposals'){
+      # show loading screen
+      shinyjs::show("loading_page2")
+      proposal_df_path =  parseFilePaths(volumes, input$DataframeProposalFile)
+      # getting selected file name
+      similar_proposal <- getSimilarProposalsFromCSV(proposalDataFile = proposal_df_path$datapath, idForFileBeingChecked='OND20190326KS')
+      print(similar_proposal)
+      commonKeyWords(unlist(similar_proposal[4]))
+      load_data()
+    }
   })
   
   # renders the most similar file name in the div button
@@ -142,9 +155,9 @@ backend <- function(input, output, session){
   # TODO: extract the file path programatically
   observeEvent(input$openPDF, {
     # storing full proposal path as string to variable
-    full_file_path = paste(paste(full_proposal_path(), fileName(), sep='/'), '.pdf', sep='')
-    
-    file.show(file.path(full_file_path))
+    if (input$selectionType == 'PublishedResearch'){
+      file.show(file.path(selectedFilePath()))
+    }
   })
   
 }
