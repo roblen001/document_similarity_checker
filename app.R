@@ -1,7 +1,8 @@
 library(shiny)
 library(shinyFiles)
+library(shinyjs)
+library(shinycssloaders)
 
-#  custom functions
 source('frontend.R')
 source('backend.R')
 

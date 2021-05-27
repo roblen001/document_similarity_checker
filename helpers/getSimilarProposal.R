@@ -23,8 +23,6 @@ library(purrr)
 
 
 getSimilarProposal <- function(dirPath='', selectedFile='') {
-  print(selectedFile)
-  print(dirPath)
   if (dirPath == '') {
     # do nothing
   } else {

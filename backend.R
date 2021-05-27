@@ -12,8 +12,8 @@ source('helpers/getSimilarProposal.R')
 # TODO: do I give people the ability to add keywords to the stop_words df
 # This will take a certain row from similar articles dataframe and style it
 getHTML <- function (pdfFileName) {
-  if (nchar(pdfFileName) > 45){
-    indexed <- substr(pdfFileName, start = 1, stop = 45)
+  if (nchar(pdfFileName) > 30){
+    indexed <- substr(pdfFileName, start = 1, stop = 30)
     new_name <- paste(indexed, '...')
   } else {
     new_name <- pdfFileName
@@ -24,8 +24,7 @@ getHTML <- function (pdfFileName) {
   return(html)
 }
 
-
-
+# dynamically rendered keywords
 getHTML_Keywords <- function (words) {
   inner_html = '<div display: flex; flex-direction: row; flex-wrap: wrap;>'
   for (word in words) {
@@ -38,12 +37,12 @@ getHTML_Keywords <- function (words) {
   return(html)
 }
 
+
 backend <- function(input, output, session){
   # creating empty state
   full_proposal_path <- reactiveVal()
   fileName <- reactiveVal()
   commonKeyWords <- reactiveVal('')
-
   # Computer volumes depend on OS: Windows, Mac, or Linux.
   volumes <- c(Home = fs::path_home(), getVolumes()())
   
@@ -54,7 +53,27 @@ backend <- function(input, output, session){
   shinyFileChoose(input, id = "proposalFile", roots = volumes, filetypes = c("pdf"))
   output$proposalFileOutput <- renderText("No proposal file selected.")
   
+  shinyFileChoose(input, id = "proposalDataFrame", roots = volumes, filetypes = c("csv"))
+  output$proposalFileOutput <- renderText("No proposal dataframe file selected.")
+  # 
+  #  FOR OTHER PROPOSAL SELECTION INPUT TYPE
+  # 1) Select file containing proposal dataframe
+  observeEvent(
+    input$proposalDataFrame, {
+      proposalDFPath <- parseDirPath(volumes, input$proposalDataFrame)
+
+      # Reset output when selection of directory is canceled.
+      output$dirProposalsOutput <- renderText("No directory selected.")
+
+      # Otherwise if directory has been selected, print path of directory to screen.
+      if (length(proposalDFPath) > 0){
+        # Update output by printing new directory path.
+        output$dirProposalsOutput <- renderPrint(proposalDFPath)
+      }
+    }
+  )
   
+  #  FOR PUBLISHED RESEARCH SELECTION INPUT TYPE
   # 1) Select folder containing the proposals
   observeEvent(
     input$dirProposals, {
@@ -91,8 +110,8 @@ backend <- function(input, output, session){
   
   # submit button
   observeEvent(input$BeginCheck, {
-    # TODO: somehow store this path globally to be used multiple times
-    # TODO: switch with parseDirPath
+    # show loading screen
+    shinyjs::show("loading_page")
     # storing full proposal path as string to variable
     root = gsub("\\*|\\(|\\)","",as.character(input$dirProposals$root))
     path = input$dirProposals$path
@@ -106,6 +125,7 @@ backend <- function(input, output, session){
     similar_proposal <- getSimilarProposal(dirPath = full_proposal_path, selectedFile=selectedFile)
     fileName(similar_proposal[2])
     commonKeyWords(unlist(similar_proposal[4]))
+    load_data()
   })
   
   # renders the most similar file name in the div button
