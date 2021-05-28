@@ -18,9 +18,8 @@ library(purrr)
 ```{r}
 data <- read.csv('C:/document_similarity_checker/ONDRISubmissionPortalFullList .csv')
 colnames(data)
-# data <- data[1:4]
-colnames(data) <- c('id','author', 'title', 'background')
-corpus_raw <- data
+colnames(data) <- c('id','author', 'title', 'text')
+corpus_raw <- data %>% select('id', 'author', 'title', 'text')
 head(corpus_raw)
 ```
 
@@ -28,9 +27,8 @@ head(corpus_raw)
 data(stop_words)
 custom_bigram_stop_words <- c('university press', 'citing article', 'https www.tandfonline.com')
 custom_stop_words <- c('copyright', 'https', 'NA')
-
 corpus_clean <- corpus_raw %>%
-  unnest_tokens(word, background, token = "ngrams", n = 3)%>%
+  unnest_tokens(output = word, input = text, token = "ngrams", n = 3)%>%
   separate(word, c("word1", "word2", "word3"), sep = " ")
   
 print(corpus_clean)

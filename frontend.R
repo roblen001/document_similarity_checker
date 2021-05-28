@@ -76,6 +76,12 @@ frontend <- function(){
                           verbatimTextOutput("DataframeProposalFileOutput", placeholder = TRUE),
                           
                           br(),
+                          
+                          # Text input where users put the id of the proposal to compare
+                          textInput(inputId = 'proposalID', label = 'Input proposal id:',
+                                    placeholder = 'input proposal id.'),
+                          
+                          br(),
                           ),
          
          conditionalPanel("input.selectionType != 'default'",
@@ -106,10 +112,16 @@ frontend <- function(){
                                     width: 100%;',
                              tags$h3('Most Similar Proposal Information:'),
                              tags$div(style='height: 100%;',
+                                      conditionalPanel( condition = "input.selectionType == 'PublishedResearch'",
                                       p('Press to view paper:'),
                                       actionButton(inputId ="openPDF", style="background-color: #81D3EA; width: 100%; display: flex;
                                   justify-content: flex-start; padding-top: 1%; padding-bottom: 1%; border-radius: 25px; margin-bottom: 10px",
                                                    label = uiOutput("pdfFileName")
+                                      ),
+                                      ),
+                                      conditionalPanel( condition = "input.selectionType == 'OtherProposals'",
+                                                        p('Proposal Title:'),
+                                                        uiOutput("proposalTitle")
                                       ),
                                       p('Similarity meter:'),
                                       div(
@@ -118,9 +130,19 @@ frontend <- function(){
                                           style='height: 100%; width: 30%; background-color: yellow;'
                                         )
                                       ),
+                                      # keyword output for selectionType == 'OtherProposals'
+                                      conditionalPanel(condition = "input.selectionType == 'OtherProposals'",
+                                                       p('Common Keywords:'),
+                                                       tags$div(style='height: 50%; border: 1px solid grey; overflow: scroll; background-color: white;',
+                                                                uiOutput('KeywordsOtherProposal')
+                                                       )
+                                      ),
+                                      # keyword output for selectionType == 'PublishedResearch'
+                                      conditionalPanel(condition = "input.selectionType == 'PublishedResearch'",
                                       p('Common Keywords:'),
                                       tags$div(style='height: 50%; border: 1px solid grey; overflow: scroll; background-color: white;',
                                                uiOutput('Keywords')
+                                      )
                                       )
                              ),
                              

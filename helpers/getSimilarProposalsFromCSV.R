@@ -64,11 +64,11 @@ getSimilarProposalsFromCSV <- function(proposalDataFile='', idForFileBeingChecke
     most_related_articles <- colnames(contengency_table)[apply(contengency_table,1,which.max)]
     similar_articles <- tibble(corpus_cleaned$id, most_related_articles, max_values)
     colnames(similar_articles) <- c("id", "most_similar_proposal", "common_words_weighted")
-
+    
     similar_articles_with_common_word_lst <- getCommonKeywords(corpus_cleaned, similar_articles)
-    print(colnames(similar_articles_with_common_word_lst))
     results <- similar_articles_with_common_word_lst %>% filter(proposal_title == idForFileBeingChecked)
     
+
     return(results)
   }
 }

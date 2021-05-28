@@ -25,7 +25,7 @@ getHTML <- function (pdfFileName) {
   return(html)
 }
 
-# dynamically rendered keywords
+# renders common keywords for selectionType == 'PublishedResearch'
 getHTML_Keywords <- function (words) {
   inner_html = '<div display: flex; flex-direction: row; flex-wrap: wrap;>'
   for (word in words) {
@@ -38,6 +38,26 @@ getHTML_Keywords <- function (words) {
   return(html)
 }
 
+# renders common keywords for selectionType == 'OtherProposals'
+getHTML_Keywords_OtherProposals <- function (words) {
+  inner_html = '<div display: flex; flex-direction: row; flex-wrap: wrap;>'
+  for (word in words) {
+    ptag1 = paste('<div style="background-color: #81D3EA; border-radius: 15px; 
+                  padding: 5px 3px 3px 3px; margin: 3px 3px 3px 3px; display: inline-block;"><p>', word)
+    ptag2 = paste(ptag1, '</p></div>')
+    inner_html = paste(inner_html, ptag2)
+  }
+  html = paste(inner_html, '</div>')
+  return(html)
+}
+
+# dynamically render the proposal title
+getHTML_ProposalTitle <- function (propsalTitle) {
+  ptag1 = '<p>'
+  pWithContent = paste(ptag1, propsalTitle)
+  html = paste(pWithContent, '</p>')
+  return(html)
+}
 
 backend <- function(input, output, session){
   # creating empty state
@@ -45,6 +65,9 @@ backend <- function(input, output, session){
   fileName <- reactiveVal()
   commonKeyWords <- reactiveVal('')
   selectedFilePath <- reactiveVal('')
+  proposalTitle <- reactiveVal('')
+  commonKeyWords_OtherProposals <- reactiveVal('')
+  
   # Computer volumes depend on OS: Windows, Mac, or Linux.
   volumes <- c(Home = fs::path_home(), getVolumes()())
   
@@ -134,9 +157,13 @@ backend <- function(input, output, session){
       shinyjs::show("loading_page2")
       proposal_df_path =  parseFilePaths(volumes, input$DataframeProposalFile)
       # getting selected file name
-      similar_proposal <- getSimilarProposalsFromCSV(proposalDataFile = proposal_df_path$datapath, idForFileBeingChecked='OND20190326KS')
-      print(similar_proposal)
-      commonKeyWords(unlist(similar_proposal[4]))
+      similar_proposal <- getSimilarProposalsFromCSV(proposalDataFile = proposal_df_path$datapath, idForFileBeingChecked=input$proposalID)
+      commonKeyWords_OtherProposals(unlist(similar_proposal[4]))
+      # getting the title of the most similar proposal
+      corpus_raw <- read.csv(proposal_df_path$datapath)
+      colnames(corpus_raw) <- c('id', 'author', 'proposal_title', 'text')
+      title <- corpus_raw[corpus_raw$id == similar_proposal$most_similar_proposal ,]$proposal_title
+      proposalTitle(title)
       load_data()
     }
   })
@@ -146,11 +173,20 @@ backend <- function(input, output, session){
     HTML(getHTML(fileName()))
   })
   
-  # renders common keywords
+  # renders common keywords for selectionType == 'PublishedResearch'
   output$Keywords <- renderUI ({
     HTML(getHTML_Keywords(commonKeyWords()))
   })
   
+  # renders common keywords for selectionType == 'OtherProposals'
+  output$KeywordsOtherProposal <- renderUI ({
+    HTML(getHTML_Keywords_OtherProposals(commonKeyWords_OtherProposals()))
+  })
+  
+  # renders proposal title dynamically
+  output$proposalTitle <- renderUI({
+    HTML(getHTML_ProposalTitle(proposalTitle()))
+  })
   # open most similar pdf file 
   # TODO: extract the file path programatically
   observeEvent(input$openPDF, {
