@@ -123,12 +123,12 @@ frontend <- function(){
                                                         p('Proposal Title:'),
                                                         uiOutput("proposalTitle")
                                       ),
-                                      p('Similarity meter:'),
-                                      div(
-                                        style='width: 100%; height: 40px; background-color: white;',
-                                        div(
-                                          style='height: 100%; width: 30%; background-color: yellow;'
-                                        )
+                                      p('Similarity Level:'),
+                                      conditionalPanel(condition = "input.selectionType == 'OtherProposals'",
+                                                       uiOutput('similarityLevel'),
+                                                       ),
+                                      conditionalPanel(condition = "input.selectionType == 'PublishedResearch'",
+                                                       uiOutput('similarityLevelPublishedPapers'),
                                       ),
                                       # keyword output for selectionType == 'OtherProposals'
                                       conditionalPanel(condition = "input.selectionType == 'OtherProposals'",

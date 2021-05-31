@@ -59,6 +59,46 @@ getHTML_ProposalTitle <- function (propsalTitle) {
   return(html)
 }
 
+# dynamically render the similarit level indicator for OTHERPROPOSAL
+getHTML_Similarity_indicator_otherproposal <- function (commonWordCount){
+  html = "<div style='display: flex; justify-content: center; align-items: center;
+    background-color: white;'>"
+  
+  if (commonWordCount == 0) {
+    ptag = paste("<p>", 'None Found</p>')
+  }
+  else if (commonWordCount >= 1 & commonWordCount < 6) {
+    ptag = paste("<p style='color: orange;'>", 'Not Very Similar</p></div>')
+  }
+  else if (commonWordCount >= 6 & commonWordCount < 10) {
+    ptag = paste("<p style='color: 	#ffe135;'>", 'Some Similarity</p></div>')
+  } else if (commonWordCount >= 10) {
+    ptag = paste("<p style='color: green;'>", 'Similar</p></div>')
+  }
+  html = paste(html, ptag)
+  return(html)
+}
+
+# dynamically render the similarit level indicator for PUBLISHEDPAPERS
+getHTML_Similarity_indicator_publishedPapers <- function (commonWordCount){
+  html = "<div style='display: flex; justify-content: center; align-items: center;
+    background-color: white;'>"
+  
+  if (commonWordCount == 0) {
+    ptag = paste("<p>", 'None Found</p>')
+  }
+  else if (commonWordCount >= 1 & commonWordCount < 6) {
+    ptag = paste("<p style='color: orange;'>", 'Not Very Similar</p></div>')
+  }
+  else if (commonWordCount >= 6 & commonWordCount < 10) {
+    ptag = paste("<p style='color: 	#ffe135;'>", 'Some Similarity</p></div>')
+  } else if (commonWordCount >= 10) {
+    ptag = paste("<p style='color: green;'>", 'Similar</p></div>')
+  }
+  html = paste(html, ptag)
+  return(html)
+}
+
 backend <- function(input, output, session){
   # creating empty state
   full_proposal_path <- reactiveVal()
@@ -67,6 +107,8 @@ backend <- function(input, output, session){
   selectedFilePath <- reactiveVal('')
   proposalTitle <- reactiveVal('')
   commonKeyWords_OtherProposals <- reactiveVal('')
+  amount_of_commonWords <- reactiveVal(0)
+  amount_of_commonWords_publishedPapers <- reactiveVal(0)
   
   # Computer volumes depend on OS: Windows, Mac, or Linux.
   volumes <- c(Home = fs::path_home(), getVolumes()())
@@ -104,10 +146,9 @@ backend <- function(input, output, session){
     input$dirProposals, {
       
       dirPath <- parseDirPath(volumes, input$dirProposals)
-      
+
       # Reset output when selection of directory is canceled.
       output$dirProposalsOutput <- renderText("No directory selected.")
-      print(length(dirPath))
       # Otherwise if directory has been selected, print path of directory to screen.
       if (length(dirPath) > 0){
         # Update output by printing new directory path.
@@ -151,6 +192,7 @@ backend <- function(input, output, session){
       similar_proposal <- getSimilarProposal(dirPath = full_proposal_path, selectedFile=selectedFile)
       fileName(similar_proposal[2])
       commonKeyWords(unlist(similar_proposal[4]))
+      amount_of_commonWords_publishedPapers(similar_proposal$common_words_weighted)
       load_data()
     } else if (input$selectionType == 'OtherProposals'){
       # show loading screen
@@ -159,6 +201,7 @@ backend <- function(input, output, session){
       # getting selected file name
       similar_proposal <- getSimilarProposalsFromCSV(proposalDataFile = proposal_df_path$datapath, idForFileBeingChecked=input$proposalID)
       commonKeyWords_OtherProposals(unlist(similar_proposal[4]))
+      amount_of_commonWords(similar_proposal$common_words_weighted)
       # getting the title of the most similar proposal
       corpus_raw <- read.csv(proposal_df_path$datapath)
       colnames(corpus_raw) <- c('id', 'author', 'proposal_title', 'text')
@@ -187,8 +230,18 @@ backend <- function(input, output, session){
   output$proposalTitle <- renderUI({
     HTML(getHTML_ProposalTitle(proposalTitle()))
   })
+  
+  # renders similarity level dynamically
+  output$similarityLevel <- renderUI({
+    HTML(getHTML_Similarity_indicator_otherproposal(amount_of_commonWords()))
+  })
+  
+  # renders similarity level dynamically
+  output$similarityLevelPublishedPapers <- renderUI({
+    HTML(getHTML_Similarity_indicator_publishedPapers(amount_of_commonWords_publishedPapers()))
+  })
+  
   # open most similar pdf file 
-  # TODO: extract the file path programatically
   observeEvent(input$openPDF, {
     # storing full proposal path as string to variable
     if (input$selectionType == 'PublishedResearch'){
