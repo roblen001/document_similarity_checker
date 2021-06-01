@@ -12,7 +12,7 @@
 load_data <- function() {
     shinyjs::hide("loading_page")
     shinyjs::show("main_content")   
-  }
+}
 
 # Options for Spinner (shows while the data is loading)
 options(spinner.color="#0275D8", spinner.color.background="#ffffff", spinner.size=2)
@@ -104,7 +104,7 @@ frontend <- function(){
                            id = "loading_page",
                            withSpinner(tableOutput('tb'), type = 4)
                          )
-                       ),
+                           ),
                        # pdf information container
                        hidden(
                          div(id='main_content',
@@ -133,14 +133,14 @@ frontend <- function(){
                                       # keyword output for selectionType == 'OtherProposals'
                                       conditionalPanel(condition = "input.selectionType == 'OtherProposals'",
                                                        p('Common Keywords:'),
-                                                       tags$div(style='height: 50%; border: 1px solid grey; overflow: scroll; background-color: white;',
+                                                       tags$div(style='height: 250px; border: 1px solid grey; overflow: scroll; background-color: white;',
                                                                 uiOutput('KeywordsOtherProposal')
                                                        )
                                       ),
                                       # keyword output for selectionType == 'PublishedResearch'
                                       conditionalPanel(condition = "input.selectionType == 'PublishedResearch'",
                                       p('Common Keywords:'),
-                                      tags$div(style='height: 50%; border: 1px solid grey; overflow: scroll; background-color: white;',
+                                      tags$div(style='height: 250px; border: 1px solid grey; overflow: scroll; background-color: white;',
                                                uiOutput('Keywords')
                                       )
                                       )

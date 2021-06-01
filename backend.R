@@ -9,95 +9,12 @@
 # ========================================================================================
 source('helpers/getSimilarProposal.R')
 source('helpers/getSimilarProposalsFromCSV.R')
-
-# TODO: do I give people the ability to add keywords to the stop_words df
-# This will take a certain row from similar articles dataframe and style it
-getHTML <- function (pdfFileName) {
-  if (nchar(pdfFileName) > 30){
-    indexed <- substr(pdfFileName, start = 1, stop = 30)
-    new_name <- paste(indexed, '...')
-  } else {
-    new_name <- pdfFileName
-  }
-  ptag1 = '<p>'
-  pWithContent = paste(ptag1, new_name)
-  html = paste(pWithContent, '</p>')
-  return(html)
-}
-
-# renders common keywords for selectionType == 'PublishedResearch'
-getHTML_Keywords <- function (words) {
-  inner_html = '<div display: flex; flex-direction: row; flex-wrap: wrap;>'
-  for (word in words) {
-    ptag1 = paste('<div style="background-color: #81D3EA; border-radius: 15px; 
-                  padding: 5px 3px 3px 3px; margin: 3px 3px 3px 3px; display: inline-block;"><p>', word)
-    ptag2 = paste(ptag1, '</p></div>')
-    inner_html = paste(inner_html, ptag2)
-  }
-  html = paste(inner_html, '</div>')
-  return(html)
-}
-
-# renders common keywords for selectionType == 'OtherProposals'
-getHTML_Keywords_OtherProposals <- function (words) {
-  inner_html = '<div display: flex; flex-direction: row; flex-wrap: wrap;>'
-  for (word in words) {
-    ptag1 = paste('<div style="background-color: #81D3EA; border-radius: 15px; 
-                  padding: 5px 3px 3px 3px; margin: 3px 3px 3px 3px; display: inline-block;"><p>', word)
-    ptag2 = paste(ptag1, '</p></div>')
-    inner_html = paste(inner_html, ptag2)
-  }
-  html = paste(inner_html, '</div>')
-  return(html)
-}
-
-# dynamically render the proposal title
-getHTML_ProposalTitle <- function (propsalTitle) {
-  ptag1 = '<p>'
-  pWithContent = paste(ptag1, propsalTitle)
-  html = paste(pWithContent, '</p>')
-  return(html)
-}
-
-# dynamically render the similarit level indicator for OTHERPROPOSAL
-getHTML_Similarity_indicator_otherproposal <- function (commonWordCount){
-  html = "<div style='display: flex; justify-content: center; align-items: center;
-    background-color: white;'>"
-  
-  if (commonWordCount == 0) {
-    ptag = paste("<p>", 'None Found</p>')
-  }
-  else if (commonWordCount >= 1 & commonWordCount < 6) {
-    ptag = paste("<p style='color: orange;'>", 'Not Very Similar</p></div>')
-  }
-  else if (commonWordCount >= 6 & commonWordCount < 10) {
-    ptag = paste("<p style='color: 	#ffe135;'>", 'Some Similarity</p></div>')
-  } else if (commonWordCount >= 10) {
-    ptag = paste("<p style='color: green;'>", 'Similar</p></div>')
-  }
-  html = paste(html, ptag)
-  return(html)
-}
-
-# dynamically render the similarit level indicator for PUBLISHEDPAPERS
-getHTML_Similarity_indicator_publishedPapers <- function (commonWordCount){
-  html = "<div style='display: flex; justify-content: center; align-items: center;
-    background-color: white;'>"
-  
-  if (commonWordCount == 0) {
-    ptag = paste("<p>", 'None Found</p>')
-  }
-  else if (commonWordCount >= 1 & commonWordCount < 6) {
-    ptag = paste("<p style='color: orange;'>", 'Not Very Similar</p></div>')
-  }
-  else if (commonWordCount >= 6 & commonWordCount < 10) {
-    ptag = paste("<p style='color: 	#ffe135;'>", 'Some Similarity</p></div>')
-  } else if (commonWordCount >= 10) {
-    ptag = paste("<p style='color: green;'>", 'Similar</p></div>')
-  }
-  html = paste(html, ptag)
-  return(html)
-}
+source('helpers/getHTML_pdfName.R')
+source('helpers/getHTML_Keywords_pubResearch.R')
+source('helpers/getHTML_Keywords_OtherProposals.R')
+source('helpers/getHTML_ProposalTitle.R')
+source('helpers/getHTML_Similarity_indicator_otherproposal.R')
+source('helpers/getHTML_Similarity_indicator_publishedPapers.R')
 
 backend <- function(input, output, session){
   # creating empty state
@@ -179,6 +96,7 @@ backend <- function(input, output, session){
     if (input$selectionType == 'PublishedResearch'){
       # show loading screen
       shinyjs::show("loading_page")
+      shinyjs::hide("main_content") 
       # storing full proposal path as string to variable
       root = gsub("\\*|\\(|\\)","",as.character(input$dirProposals$root))
       path = input$dirProposals$path
@@ -187,16 +105,17 @@ backend <- function(input, output, session){
       full_proposal_path(full_proposal_path)
       # getting selected file name
       file_path =  parseFilePaths(volumes, input$proposalFile)
-      selectedFilePath(file_path$datapath)
       selectedFile <- gsub("\\..*","",file_path$name)
       similar_proposal <- getSimilarProposal(dirPath = full_proposal_path, selectedFile=selectedFile)
       fileName(similar_proposal[2])
+      selectedFilePath(paste(parseDirPath(volumes, input$dirProposals), paste(fileName(), '.pdf', sep=""), sep="/"))
       commonKeyWords(unlist(similar_proposal[4]))
       amount_of_commonWords_publishedPapers(similar_proposal$common_words_weighted)
       load_data()
     } else if (input$selectionType == 'OtherProposals'){
       # show loading screen
-      shinyjs::show("loading_page2")
+      shinyjs::show("loading_page")
+      shinyjs::hide("main_content") 
       proposal_df_path =  parseFilePaths(volumes, input$DataframeProposalFile)
       # getting selected file name
       similar_proposal <- getSimilarProposalsFromCSV(proposalDataFile = proposal_df_path$datapath, idForFileBeingChecked=input$proposalID)
@@ -213,12 +132,18 @@ backend <- function(input, output, session){
   
   # renders the most similar file name in the div button
   output$pdfFileName <- renderUI ({
-    HTML(getHTML(fileName()))
+    # check if there is a similar file
+    print(identical(fileName()$most_similar_proposal, character(0)))
+    if (identical(fileName()$most_similar_proposal, character(0)) == FALSE )  {
+      HTML(getHTML_pdfName(fileName()))
+    } else {
+      HTML('<p>NO SIMILAR FILE FOUND</p>')
+    }
   })
   
   # renders common keywords for selectionType == 'PublishedResearch'
   output$Keywords <- renderUI ({
-    HTML(getHTML_Keywords(commonKeyWords()))
+    HTML(getHTML_Keywords_pubResearch(commonKeyWords()))
   })
   
   # renders common keywords for selectionType == 'OtherProposals'
@@ -238,14 +163,20 @@ backend <- function(input, output, session){
   
   # renders similarity level dynamically
   output$similarityLevelPublishedPapers <- renderUI({
-    HTML(getHTML_Similarity_indicator_publishedPapers(amount_of_commonWords_publishedPapers()))
+    # check if there is a similar file 
+    if(identical(fileName()$most_similar_proposal, character(0)) == FALSE){
+      HTML(getHTML_Similarity_indicator_publishedPapers(amount_of_commonWords_publishedPapers()))
+    }
   })
   
   # open most similar pdf file 
   observeEvent(input$openPDF, {
-    # storing full proposal path as string to variable
-    if (input$selectionType == 'PublishedResearch'){
-      file.show(file.path(selectedFilePath()))
+    # check if there is a similar file 
+    if(identical(fileName()$most_similar_proposal, character(0)) == FALSE){
+      # storing full proposal path as string to variable
+      if (input$selectionType == 'PublishedResearch'){
+        file.show(file.path(selectedFilePath()))
+      } 
     }
   })
   
