@@ -15,6 +15,7 @@ source('helpers/getHTML_Keywords_OtherProposals.R')
 source('helpers/getHTML_ProposalTitle.R')
 source('helpers/getHTML_Similarity_indicator_otherproposal.R')
 source('helpers/getHTML_Similarity_indicator_publishedPapers.R')
+source('helpers/checkWithKeywords.R')
 
 backend <- function(input, output, session){
   # creating empty state
@@ -26,6 +27,7 @@ backend <- function(input, output, session){
   commonKeyWords_OtherProposals <- reactiveVal('')
   amount_of_commonWords <- reactiveVal(0)
   amount_of_commonWords_publishedPapers <- reactiveVal(0)
+  proposalDF <- reactiveVal()
   
   # Computer volumes depend on OS: Windows, Mac, or Linux.
   volumes <- c(Home = fs::path_home(), getVolumes()())
@@ -117,15 +119,34 @@ backend <- function(input, output, session){
       shinyjs::show("loading_page")
       shinyjs::hide("main_content") 
       proposal_df_path =  parseFilePaths(volumes, input$DataframeProposalFile)
-      # getting selected file name
-      similar_proposal <- getSimilarProposalsFromCSV(proposalDataFile = proposal_df_path$datapath, idForFileBeingChecked=input$proposalID)
-      commonKeyWords_OtherProposals(unlist(similar_proposal[4]))
-      amount_of_commonWords(similar_proposal$common_words_weighted)
-      # getting the title of the most similar proposal
-      corpus_raw <- read.csv(proposal_df_path$datapath)
-      colnames(corpus_raw) <- c('id', 'author', 'proposal_title', 'text')
-      title <- corpus_raw[corpus_raw$id == similar_proposal$most_similar_proposal ,]$proposal_title
-      proposalTitle(title)
+      #  checking what the user has selected for CHECK USING
+      if (input$checkUsing == 'Keywords'){
+        
+        
+        # getting selected file name
+        similar_proposal <- checkWithKeywords(filePath = proposal_df_path$datapath, input = input$keywordsList)
+        print(similar_proposal)
+        # commonKeyWords_OtherProposals()
+        # amount_of_commonWords(similar_proposal$common_words_weighted)
+        # # getting the title of the most similar proposal
+        # corpus_raw <- read.csv(proposal_df_path$datapath)
+        # colnames(corpus_raw) <- c('id', 'author', 'proposal_title', 'text')
+        # title <- corpus_raw[corpus_raw$id == similar_proposal$most_similar_proposal ,]$proposal_title
+        proposalDF(similar_proposal)
+        
+        
+        
+      }else if (input$checkUsing == 'ProposalId'){
+        # getting selected file name
+        similar_proposal <- getSimilarProposalsFromCSV(proposalDataFile = proposal_df_path$datapath, idForFileBeingChecked=input$proposalID)
+        commonKeyWords_OtherProposals(unlist(similar_proposal[4]))
+        amount_of_commonWords(similar_proposal$common_words_weighted)
+        # getting the title of the most similar proposal
+        corpus_raw <- read.csv(proposal_df_path$datapath)
+        colnames(corpus_raw) <- c('id', 'author', 'proposal_title', 'text')
+        title <- corpus_raw[corpus_raw$id == similar_proposal$most_similar_proposal ,]$proposal_title
+        proposalTitle(title) 
+      }
       load_data()
     }
   })
@@ -156,9 +177,20 @@ backend <- function(input, output, session){
     HTML(getHTML_ProposalTitle(proposalTitle()))
   })
   
+  # renders proposal list dynamically
+  output$proposalList <- renderUI({
+    HTML(getHTML_ProposalTitle(proposalDF()))
+  })
+  
+  
   # renders similarity level dynamically
   output$similarityLevel <- renderUI({
-    HTML(getHTML_Similarity_indicator_otherproposal(amount_of_commonWords()))
+    print(fileName()$most_similar_proposal)
+    if (identical(fileName()$most_similar_proposal, NULL) == FALSE )  {
+      HTML(getHTML_Similarity_indicator_otherproposal(amount_of_commonWords()))
+    } else {
+      HTML('<p>NO SIMILAR FILE FOUND</p>')
+    }
   })
   
   # renders similarity level dynamically

@@ -65,26 +65,53 @@ frontend <- function(){
          
          # UI for input for "Other Proposal" selection
          conditionalPanel("input.selectionType == 'OtherProposals'",
+                            # User Selects if they want to test using keywords on
+                            # proposal id
+                            selectInput(
+                              inputId = 'checkUsing', 'Check Using:',
+                              c('--Please Make A Selection--' = 'default',
+                                'Keywords' = 'Keywords',
+                                'Proposal Id' = 'ProposalId')
+                            ),
                           # Select file with the proposal to be checked
-                          shinyFilesButton(id = "DataframeProposalFile",
-                                           label = 'Click to select a proposal dataframe file',
-                                           title = 'Please select a proposal dataframe file',
-                                           multiple = FALSE,
-                                           icone = icon("file")
-                                           ),
+                          conditionalPanel(
+                            condition = "input.checkUsing != 'default'",
+                     
+                            shinyFilesButton(id = "DataframeProposalFile",
+                                             label = 'Click to select a proposal dataframe file',
+                                             title = 'Please select a proposal dataframe file',
+                                             multiple = FALSE,
+                                             icone = icon("file")
+                            ),
+                            
+                            verbatimTextOutput("DataframeProposalFileOutput", placeholder = TRUE),
+                            
+                            br(),
+                            conditionalPanel(condition = "input.checkUsing == 'ProposalId'",
+                                             # Text input where users put the id of the proposal to compare
+                                             textInput(inputId = 'proposalID', label = 'Input proposal id:',
+                                                       placeholder = 'input proposal id.'),
+                                             ),
+                            
+                          ),
                           
-                          verbatimTextOutput("DataframeProposalFileOutput", placeholder = TRUE),
+                          # Select file with the proposal to be checked
+                          conditionalPanel(
+                            condition = "input.checkUsing == 'Keywords'",
+                            
+                            p('Seperate the keywords with commas for them to count
+                              as seperate words'),
+                            
+                            textAreaInput(inputId = "keywordsList", label = "Input Keywords:", 
+                                          width = "1000px", height="200px",
+                                          placeholder = "ex: Deep Learning,ai, ONDRI Neuropsychology Platform 
+                                          "),
+                            
+                          ),
                           
-                          br(),
-                          
-                          # Text input where users put the id of the proposal to compare
-                          textInput(inputId = 'proposalID', label = 'Input proposal id:',
-                                    placeholder = 'input proposal id.'),
-                          
-                          br(),
                           ),
          
-         conditionalPanel("input.selectionType != 'default'",
+         conditionalPanel("input.selectionType == 'PublishedResearch' | input.checkUsing != 'default'",
                           # Action button will only be showed once and input selection is made
                           actionButton(inputId = "BeginCheck",
                                        label = "Begin Check",
@@ -111,40 +138,47 @@ frontend <- function(){
                              style='height: 100%;
                                     width: 100%;',
                              tags$h3('Most Similar Proposal Information:'),
-                             tags$div(style='height: 100%;',
-                                      conditionalPanel( condition = "input.selectionType == 'PublishedResearch'",
-                                      p('Press to view paper:'),
-                                      actionButton(inputId ="openPDF", style="background-color: #81D3EA; width: 100%; display: flex;
-                                  justify-content: flex-start; padding-top: 1%; padding-bottom: 1%; border-radius: 25px; margin-bottom: 10px",
-                                                   label = uiOutput("pdfFileName")
-                                      ),
-                                      ),
-                                      conditionalPanel( condition = "input.selectionType == 'OtherProposals'",
-                                                        p('Proposal Title:'),
-                                                        uiOutput("proposalTitle")
-                                      ),
-                                      p('Similarity Level:'),
-                                      conditionalPanel(condition = "input.selectionType == 'OtherProposals'",
-                                                       uiOutput('similarityLevel'),
-                                                       ),
-                                      conditionalPanel(condition = "input.selectionType == 'PublishedResearch'",
-                                                       uiOutput('similarityLevelPublishedPapers'),
-                                      ),
-                                      # keyword output for selectionType == 'OtherProposals'
-                                      conditionalPanel(condition = "input.selectionType == 'OtherProposals'",
-                                                       p('Common Keywords:'),
-                                                       tags$div(style='height: 250px; border: 1px solid grey; overflow: scroll; background-color: white;',
-                                                                uiOutput('KeywordsOtherProposal')
-                                                       )
-                                      ),
-                                      # keyword output for selectionType == 'PublishedResearch'
-                                      conditionalPanel(condition = "input.selectionType == 'PublishedResearch'",
-                                      p('Common Keywords:'),
-                                      tags$div(style='height: 250px; border: 1px solid grey; overflow: scroll; background-color: white;',
-                                               uiOutput('Keywords')
-                                      )
-                                      )
-                             ),
+                             # for keywords check
+                             conditionalPanel(condition = "input.checkUsing == 'Keywords'",
+                                              uiOutput("proposalList")
+                                              ),
+                             # if not Keywors check
+                             conditionalPanel(condition = "input.checkUsing != 'Keywords'",
+                               tags$div(style='height: 100%;',
+                                        conditionalPanel( condition = "input.selectionType == 'PublishedResearch'",
+                                        p('Press to view paper:'),
+                                        actionButton(inputId ="openPDF", style="background-color: #81D3EA; width: 100%; display: flex;
+                                    justify-content: flex-start; padding-top: 1%; padding-bottom: 1%; border-radius: 25px; margin-bottom: 10px",
+                                                     label = uiOutput("pdfFileName")
+                                        ),
+                                        ),
+                                        conditionalPanel( condition = "input.selectionType == 'OtherProposals'",
+                                                          p('Proposal Title:'),
+                                                          uiOutput("proposalTitle")
+                                        ),
+                                        p('Similarity Level:'),
+                                        conditionalPanel(condition = "input.selectionType == 'OtherProposals'",
+                                                         uiOutput('similarityLevel'),
+                                                         ),
+                                        conditionalPanel(condition = "input.selectionType == 'PublishedResearch'",
+                                                         uiOutput('similarityLevelPublishedPapers'),
+                                        ),
+                                        # keyword output for selectionType == 'OtherProposals'
+                                        conditionalPanel(condition = "input.selectionType == 'OtherProposals'",
+                                                         p('Common Keywords:'),
+                                                         tags$div(style='height: 250px; border: 1px solid grey; overflow: scroll; background-color: white;',
+                                                                  uiOutput('KeywordsOtherProposal')
+                                                         )
+                                        ),
+                                        # keyword output for selectionType == 'PublishedResearch'
+                                        conditionalPanel(condition = "input.selectionType == 'PublishedResearch'",
+                                        p('Common Keywords:'),
+                                        tags$div(style='height: 250px; border: 1px solid grey; overflow: scroll; background-color: white;',
+                                                 uiOutput('Keywords')
+                                        )
+                                        )
+                               ),
+                             )
                              
                          )
                        )

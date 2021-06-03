@@ -122,7 +122,7 @@ visualize_long <- visualize_long %>% group_by(title) %>%
 
 results <- merge(similar_articles, visualize_long, by='title' )
 results <- merge(results, visualize_long, by.x = "most_similar_proposal", by.y = "title" )
-
+results
 s <- strsplit(results$alltypes.x , split = ", ")
 a <- strsplit(results$alltypes.y , split = ", ")
 
