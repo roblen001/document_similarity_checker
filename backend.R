@@ -16,6 +16,7 @@ source('helpers/getHTML_ProposalTitle.R')
 source('helpers/getHTML_Similarity_indicator_otherproposal.R')
 source('helpers/getHTML_Similarity_indicator_publishedPapers.R')
 source('helpers/checkWithKeywords.R')
+source('helpers/getHTML_proposalList.R')
 
 backend <- function(input, output, session){
   # creating empty state
@@ -125,7 +126,6 @@ backend <- function(input, output, session){
         
         # getting selected file name
         similar_proposal <- checkWithKeywords(filePath = proposal_df_path$datapath, input = input$keywordsList)
-        print(similar_proposal)
         # commonKeyWords_OtherProposals()
         # amount_of_commonWords(similar_proposal$common_words_weighted)
         # # getting the title of the most similar proposal
@@ -179,7 +179,8 @@ backend <- function(input, output, session){
   
   # renders proposal list dynamically
   output$proposalList <- renderUI({
-    HTML(getHTML_ProposalTitle(proposalDF()))
+    print(HTML(getHTML_proposalList(proposalDF())))
+    HTML(getHTML_proposalList(proposalDF()))
   })
   
   
