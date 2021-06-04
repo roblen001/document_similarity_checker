@@ -126,12 +126,6 @@ backend <- function(input, output, session){
         
         # getting selected file name
         similar_proposal <- checkWithKeywords(filePath = proposal_df_path$datapath, input = input$keywordsList)
-        # commonKeyWords_OtherProposals()
-        # amount_of_commonWords(similar_proposal$common_words_weighted)
-        # # getting the title of the most similar proposal
-        # corpus_raw <- read.csv(proposal_df_path$datapath)
-        # colnames(corpus_raw) <- c('id', 'author', 'proposal_title', 'text')
-        # title <- corpus_raw[corpus_raw$id == similar_proposal$most_similar_proposal ,]$proposal_title
         proposalDF(similar_proposal)
         
         
@@ -179,14 +173,17 @@ backend <- function(input, output, session){
   
   # renders proposal list dynamically
   output$proposalList <- renderUI({
-    print(HTML(getHTML_proposalList(proposalDF())))
-    HTML(getHTML_proposalList(proposalDF()))
+    # check if there were any common words found
+    if (proposalDF() == "NO WORDS IN COMMON"){
+      HTML('<p>NO WORDS IN COMMON</p>')
+    }else{
+      HTML(getHTML_proposalList(proposalDF()))
+    }
   })
   
   
   # renders similarity level dynamically
   output$similarityLevel <- renderUI({
-    print(fileName()$most_similar_proposal)
     if (identical(fileName()$most_similar_proposal, NULL) == FALSE )  {
       HTML(getHTML_Similarity_indicator_otherproposal(amount_of_commonWords()))
     } else {

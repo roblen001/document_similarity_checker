@@ -140,7 +140,9 @@ frontend <- function(){
                              tags$h3('Most Similar Proposal Information:'),
                              # for keywords check
                              conditionalPanel(condition = "input.checkUsing == 'Keywords'",
-                                              uiOutput("proposalList")
+                                              tags$div(style='height: 500px; border: 1px solid grey; overflow: scroll; background-color: white;',
+                                                       uiOutput('proposalList')
+                                              )
                                               ),
                              # if not Keywors check
                              conditionalPanel(condition = "input.checkUsing != 'Keywords'",

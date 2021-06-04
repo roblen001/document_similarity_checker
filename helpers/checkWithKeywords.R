@@ -27,31 +27,36 @@ checkWithKeywords <- function(filePath, input){
   corpus_clean <- subset(corpus_raw, select = -c(id, text, title, author) )
   amount_of_commonWords <- apply(corpus_clean,MARGIN=1,table)
   corpus_raw$amount_of_commonWords <- amount_of_commonWords
-  corpus_raw <- corpus_raw %>% unnest_auto(amount_of_commonWords) %>% unnest(cols = c(`FALSE`, `TRUE`))
-  corpus_raw[is.na(corpus_raw)] <- 0
-  colnames(corpus_raw)[length(corpus_raw)] <- 'amount_of_wordsCommon'
-  results <- corpus_raw[order(corpus_raw$amount_of_wordsCommon, decreasing = TRUE),]
-  final_results <- results %>%
-    top_n(5)
-  ##Go through each row and determine if a value is zero
-  row_sub = apply(final_results, 1, function(row) all(row !=0 ))
-  ##Subset as usual
-  final_results <- final_results[row_sub,]
   
-  # TODO: Optimize this
-  common_words <- c()
-  for (row in final_results$text) {
-    str_commonWords <- ''
-    for (word in input_word_list[[1]]) {
-      word <- trimws(word, which = "both")
-      if (grepl(word, row, fixed = TRUE)) {
-        str_commonWords <- paste(str_commonWords, word, sep = ",")
+  if (typeof(corpus_raw$amount_of_commonWords) != 'list'){
+    final_results <- "NO WORDS IN COMMON"
+  }else{
+    corpus_raw <- corpus_raw %>% unnest_auto(amount_of_commonWords) %>% unnest(cols = c(`FALSE`, `TRUE`))
+    corpus_raw[is.na(corpus_raw)] <- 0
+    colnames(corpus_raw)[length(corpus_raw)] <- 'amount_of_wordsCommon'
+    results <- corpus_raw[order(corpus_raw$amount_of_wordsCommon, decreasing = TRUE),]
+    final_results <- results %>%
+      top_n(5)
+    ##Go through each row and determine if a value is zero
+    row_sub = apply(final_results, 1, function(row) all(row !=0 ))
+    ##Subset as usual
+    final_results <- final_results[row_sub,]
+    
+    # TODO: Optimize this
+    common_words <- c()
+    for (row in final_results$text) {
+      str_commonWords <- ''
+      for (word in input_word_list[[1]]) {
+        word <- trimws(word, which = "both")
+        if (grepl(word, row, fixed = TRUE)) {
+          str_commonWords <- paste(str_commonWords, word, sep = ", ")
+        }
       }
+      common_words <- c(common_words, str_commonWords)
     }
-    common_words <- c(common_words, str_commonWords)
+    
+    final_results$common_words <- common_words 
   }
-  
-  final_results$common_words <- common_words
   
   return(final_results)
 }
