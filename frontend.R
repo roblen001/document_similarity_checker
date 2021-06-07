@@ -41,26 +41,42 @@ frontend <- function(){
          # UI for input for "Published Research" selection
          conditionalPanel("input.selectionType == 'PublishedResearch'",
                           # Select directory with all the proposals
-                          shinyDirButton(id = "dirProposals", 
+                          shinyDirButton(id = "dirProposals",
                                          label = "Click to select proposal directory.",
                                          title = "Please select a proposal folder.",
                                          icon = icon("folder")),
-                          
+
                           verbatimTextOutput("dirProposalsOutput", placeholder = TRUE),
-                          
-                          br(),
-                          
-                          # Select file with the proposal to be checked
-                          shinyFilesButton(id = "proposalFile",
-                                           label = "Click to select a proposal file.",
-                                           title = "Please select a proposal file.",
-                                           multiple = FALSE,
-                                           icon = icon("file")),
-
-                          verbatimTextOutput("proposalFileOutput", placeholder = TRUE),
 
                           br(),
-                          
+                          #  Check using keywords
+                          selectInput(
+                            inputId = 'checkUsingPubResearch', 'Check Using:',
+                            c('--Please Make A Selection--' = 'default',
+                              'Keywords' = 'Keywords',
+                              'PDF File' = 'pdfFile')
+                          ),
+                          conditionalPanel(condition = "input.checkUsingPubResearch == 'Keywords'",
+                                           p('Seperate the keywords with commas for them to count
+                                            as seperate words'),
+
+                                           textAreaInput(inputId = "keywordsList_pubResearch", label = "Input Keywords:",
+                                                         width = "1000px", height="200px",
+                                                         placeholder = "ex: Deep Learning,ai, ONDRI Neuropsychology Platform
+                                          "),
+                                           ),
+                          conditionalPanel(condition = "input.checkUsingPubResearch == 'pdfFile'",
+                                           # Select file with the proposal to be checked
+                                           shinyFilesButton(id = "proposalFile",
+                                                            label = "Click to select a proposal file.",
+                                                            title = "Please select a proposal file.",
+                                                            multiple = FALSE,
+                                                            icon = icon("file")),
+
+                                           verbatimTextOutput("proposalFileOutput", placeholder = TRUE),
+
+                                           br(),
+                                           ),
                           ),
          
          # UI for input for "Other Proposal" selection
@@ -111,7 +127,7 @@ frontend <- function(){
                           
                           ),
          
-         conditionalPanel("input.selectionType == 'PublishedResearch' | input.checkUsing != 'default'",
+         conditionalPanel("input.checkUsingPubResearch != 'default' | input.checkUsing != 'default'",
                           # Action button will only be showed once and input selection is made
                           actionButton(inputId = "BeginCheck",
                                        label = "Begin Check",
@@ -138,14 +154,20 @@ frontend <- function(){
                              style='height: 100%;
                                     width: 100%;',
                              tags$h3('Most Similar Proposal Information:'),
-                             # for keywords check
+                             # for keywords check other proposals
                              conditionalPanel(condition = "input.checkUsing == 'Keywords'",
                                               tags$div(style='height: 500px; border: 1px solid grey; overflow: scroll; background-color: white;',
                                                        uiOutput('proposalList')
                                               )
                                               ),
-                             # if not Keywors check
-                             conditionalPanel(condition = "input.checkUsing != 'Keywords'",
+                             # for keywords check published research
+                             conditionalPanel(condition = "input.checkUsingPubResearch == 'Keywords'",
+                                              tags$div(style='height: 500px; border: 1px solid grey; overflow: scroll; background-color: white;',
+                                                       uiOutput('proposalList_pubResearch')
+                                              )
+                             ),
+                             # if not Keywords check
+                             conditionalPanel(condition = "input.checkUsing != 'Keywords' & input.checkUsingPubResearch != 'Keywords'",
                                tags$div(style='height: 100%;',
                                         conditionalPanel( condition = "input.selectionType == 'PublishedResearch'",
                                         p('Press to view paper:'),

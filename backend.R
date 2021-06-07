@@ -17,6 +17,7 @@ source('helpers/getHTML_Similarity_indicator_otherproposal.R')
 source('helpers/getHTML_Similarity_indicator_publishedPapers.R')
 source('helpers/checkWithKeywords.R')
 source('helpers/getHTML_proposalList.R')
+source('helpers/checkWithKeyWords_pubResearch.R')
 
 backend <- function(input, output, session){
   # creating empty state
@@ -106,14 +107,23 @@ backend <- function(input, output, session){
       proposal_path = paste(path, collapse='/' )
       full_proposal_path =  parseDirPath(volumes, input$dirProposals)
       full_proposal_path(full_proposal_path)
-      # getting selected file name
-      file_path =  parseFilePaths(volumes, input$proposalFile)
-      selectedFile <- gsub("\\..*","",file_path$name)
-      similar_proposal <- getSimilarProposal(dirPath = full_proposal_path, selectedFile=selectedFile)
-      fileName(similar_proposal[2])
-      selectedFilePath(paste(parseDirPath(volumes, input$dirProposals), paste(fileName(), '.pdf', sep=""), sep="/"))
-      commonKeyWords(unlist(similar_proposal[4]))
-      amount_of_commonWords_publishedPapers(similar_proposal$common_words_weighted)
+      # Checking for what users selected for CHECK USING
+      if (input$checkUsingPubResearch == 'Keywords'){
+        # getting selected file name
+        similar_proposal <- checkWithKeyWords_pubResearch(full_proposal_path(), input = input$keywordsList_pubResearch)
+        print(similar_proposal)
+        proposalDF(similar_proposal)
+        
+      }else{
+        # getting selected file name
+        file_path =  parseFilePaths(volumes, input$proposalFile)
+        selectedFile <- gsub("\\..*","",file_path$name)
+        similar_proposal <- getSimilarProposal(dirPath = full_proposal_path, selectedFile=selectedFile)
+        fileName(similar_proposal[2])
+        selectedFilePath(paste(parseDirPath(volumes, input$dirProposals), paste(fileName(), '.pdf', sep=""), sep="/"))
+        commonKeyWords(unlist(similar_proposal[4]))
+        amount_of_commonWords_publishedPapers(similar_proposal$common_words_weighted) 
+      }
       load_data()
     } else if (input$selectionType == 'OtherProposals'){
       # show loading screen
@@ -122,14 +132,9 @@ backend <- function(input, output, session){
       proposal_df_path =  parseFilePaths(volumes, input$DataframeProposalFile)
       #  checking what the user has selected for CHECK USING
       if (input$checkUsing == 'Keywords'){
-        
-        
         # getting selected file name
         similar_proposal <- checkWithKeywords(filePath = proposal_df_path$datapath, input = input$keywordsList)
         proposalDF(similar_proposal)
-        
-        
-        
       }else if (input$checkUsing == 'ProposalId'){
         # getting selected file name
         similar_proposal <- getSimilarProposalsFromCSV(proposalDataFile = proposal_df_path$datapath, idForFileBeingChecked=input$proposalID)
@@ -181,6 +186,15 @@ backend <- function(input, output, session){
     }
   })
   
+  # renders proposal list dynamically
+  output$proposalList_pubResearch <- renderUI({
+    # check if there were any common words found
+    if (proposalDF() == "NO WORDS IN COMMON"){
+      HTML('<p>NO WORDS IN COMMON</p>')
+    }else{
+      HTML(getHTML_proposalList(proposalDF()))
+    }
+  })
   
   # renders similarity level dynamically
   output$similarityLevel <- renderUI({

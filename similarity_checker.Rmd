@@ -16,6 +16,7 @@ library(pluralize)
 library(naniar)
 library(data.table)
 library(purrr)
+library(plyr)
 ```
 
 cleaning data 
@@ -35,17 +36,15 @@ investigation text
 corpus_raw <- data.frame("proposal_title" = c(),"text" = c())
 
 for (i in 1:length(file.list)){
-print(i)
  document_page_list <-pdf_text(paste("proposals/", file.list[i],sep = "")) 
  document_page_list_no_num <- gsub('[0-9]+', '', document_page_list)
- document <- paste(document_page_list_no_num, collapse=', ' )%>% strsplit("\n")-> document_text
-data.frame("proposal_title" = gsub(x =file.list[i],pattern = ".pdf", replacement = ""), 
+document <- paste(document_page_list_no_num, collapse=', ' )%>% strsplit("\n")-> document_text
+data.frame("proposal_title" = gsub(x =file.list[i],pattern = ".pdf", replacement = ""),
  "text" = document_text, stringsAsFactors = FALSE) -> document
-
 colnames(document) <- c("proposal_title", "text")
-corpus_raw <- rbind(corpus_raw,document) 
+corpus_raw <- rbind(corpus_raw,document)
 }
-corpus_raw
+corpus_raw <- ddply(corpus_raw, .(proposal_title), summarize, text=paste(text, collapse=""))
 ```
 tokenization 
 ```{r}
