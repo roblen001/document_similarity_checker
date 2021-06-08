@@ -27,7 +27,7 @@ getCleanedAndTokenizedData <- function(corpus_raw ,custom_bigram_stop_words, cus
     
     corpus_clean <- corpus_clean %>%
       group_by(proposal_title) %>%
-      count(word, sort = TRUE) 
+      dplyr::count(word, sort = TRUE) 
     
     corpus_clean <- corpus_clean %>%
       pivot_wider(names_from = word, values_from = n)
@@ -51,7 +51,7 @@ getCleanedAndTokenizedData <- function(corpus_raw ,custom_bigram_stop_words, cus
     
     corpus_clean <- corpus_clean %>%
       group_by(id) %>%
-      count(word, sort = TRUE) 
+      dplyr::count(word, sort = TRUE) 
     
     corpus_clean <- corpus_clean %>%
       pivot_wider(names_from = word, values_from = n)

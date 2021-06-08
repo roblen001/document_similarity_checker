@@ -36,7 +36,6 @@ getSimilarProposalsFromCSV <- function(proposalDataFile='', idForFileBeingChecke
     corpus_raw <- corpus_raw %>% select('id', 'author', 'proposal_title', 'text')
     custom_bigram_stop_words <- c('university press', 'citing article', 'https www.tandfonline.com', 'NA NA')
     custom_stop_words <- c('copyright', 'https', 'NA', 'doi')
-    
     # Will return a wide format dataframe with proposals as rows, words as columns
     # and occurence of keywords in the proposal (NA means none)
     corpus_cleaned <- getCleanedAndTokenizedData(corpus_raw, custom_bigram_stop_words, custom_stop_words, type='OtherProposals')
@@ -64,7 +63,6 @@ getSimilarProposalsFromCSV <- function(proposalDataFile='', idForFileBeingChecke
     most_related_articles <- colnames(contengency_table)[apply(contengency_table,1,which.max)]
     similar_articles <- tibble(corpus_cleaned$id, most_related_articles, max_values)
     colnames(similar_articles) <- c("id", "most_similar_proposal", "common_words_weighted")
-    
     similar_articles_with_common_word_lst <- getCommonKeywords(corpus_cleaned, similar_articles)
     results <- similar_articles_with_common_word_lst %>% filter(proposal_title == idForFileBeingChecked)
     

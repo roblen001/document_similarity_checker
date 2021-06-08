@@ -40,7 +40,6 @@ checkWithKeyWords_pubResearch <- function(dirPath='', input) {
     corpus_raw <- data.frame("file_name" = c(),"text" = c()) 
     
     corpus_raw <- data.frame("proposal_title" = c(),"text" = c())
-    
     for (i in 1:length(file.list)){
       document_page_list <-pdf_text(paste("proposals/", file.list[i],sep = "")) 
       document_page_list_no_num <- gsub('[0-9]+', '', document_page_list)
@@ -55,20 +54,26 @@ checkWithKeyWords_pubResearch <- function(dirPath='', input) {
     colnames(corpus_raw) <- c('title', 'text')
     # separating input into list of words
     input_word_list <- as.list(strsplit(input, ","))
+    # TODO: this is a temporary fix to the bug which occurs if only one
+    # one word is inputted
+    input_word_list <- c(input_word_list, "ANSI3456DFBEEU1")
     
     for (word in input_word_list) {
       word <- trimws(word, which = "both")
+      # adding leading and trailing whitespace to make sure we dont find word
+      # subsets ie we DON'T want ai in pain we want ai == ai
       found <- sapply(word, grepl, corpus_raw$text)
       corpus_raw <- cbind(corpus_raw,found)
     }
     
-    
     # counting the amount of common keywords found in each proposal
     corpus_clean <- subset(corpus_raw, select = -c(title, text))
-    amount_of_commonWords <- apply(corpus_clean,MARGIN=1,table)
+    amount_of_commonWords <- apply(corpus_clean,MARGIN = 1,table)
+    print(amount_of_commonWords)
     corpus_raw$amount_of_commonWords <- amount_of_commonWords
     
     if (typeof(corpus_raw$amount_of_commonWords) != 'list'){
+      # if only a single word has been inputted 
       final_results <- "NO WORDS IN COMMON"
     }else{
       corpus_raw <- corpus_raw %>% unnest_auto(amount_of_commonWords) %>% unnest(cols = c(`FALSE`, `TRUE`))

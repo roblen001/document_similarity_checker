@@ -18,12 +18,16 @@ getCommonKeywords <- function(visualize, similar_articles) {
     pivot_longer(!proposal_title, names_to = "keywords", values_to = "count") %>%
     drop_na() %>%
     select(proposal_title, keywords)
+  
 
   visualize_long <- visualize_long %>% group_by(proposal_title) %>%
-    summarise(
+    dplyr::summarise(
       alltypes = paste(keywords, collapse=", "))
   
+  print(colnames(visualize_long))
+  
   results <- merge(similar_articles, visualize_long, by='proposal_title' )
+  print('here')
   results <- merge(results, visualize_long, by.x = "most_similar_proposal", by.y = "proposal_title" )
   s <- strsplit(results$alltypes.x , split = ", ")
   a <- strsplit(results$alltypes.y , split = ", ")
