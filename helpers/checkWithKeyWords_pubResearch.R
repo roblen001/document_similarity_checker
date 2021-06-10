@@ -56,12 +56,10 @@ checkWithKeyWords_pubResearch <- function(dirPath='', input) {
     input_word_list <- as.list(strsplit(input, ","))
     # TODO: this is a temporary fix to the bug which occurs if only one
     # one word is inputted
-    input_word_list <- c(input_word_list, "ANSI3456DFBEEU1")
+    input_word_list <- c(input_word_list, "ANSI3456DFBEEU1", "ANSI342345g56DFBEEU1")
     
     for (word in input_word_list) {
       word <- trimws(word, which = "both")
-      # adding leading and trailing whitespace to make sure we dont find word
-      # subsets ie we DON'T want ai in pain we want ai == ai
       # adding white space to make sure it finds individual word and not substring
       word <- paste("", paste(word, ""))
       found <- sapply(word, grepl, corpus_raw$text)
@@ -94,6 +92,8 @@ checkWithKeyWords_pubResearch <- function(dirPath='', input) {
         str_commonWords <- ''
         for (word in input_word_list[[1]]) {
           word <- trimws(word, which = "both")
+          # adding white space to make sure it finds individual word and not substring
+          word <- paste("", paste(word, ""))
           if (grepl(word, row, fixed = TRUE)) {
             str_commonWords <- paste(str_commonWords, word, sep = ", ")
           }

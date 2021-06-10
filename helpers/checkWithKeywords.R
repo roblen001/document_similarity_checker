@@ -23,8 +23,6 @@ checkWithKeywords <- function(filePath, input){
     word <- trimws(word, which = "both")
     # adding white space to make sure it finds individual word and not substring
     word <- paste("", paste(word, ""))
-    # adding leading and trailing whitespace to make sure we dont find word
-    # subsets ie we DON'T want ai in pain we want ai == ai
     found <- sapply(word, grepl, corpus_raw$text)
     corpus_raw <- cbind(corpus_raw,found)
   }
