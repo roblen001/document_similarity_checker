@@ -13,7 +13,7 @@ getHTML_Similarity_indicator_publishedPapers <- function (commonWordCount){
   html = "<div style='display: flex; justify-content: center; align-items: center;
     background-color: white;'>"
   
-  if (commonWordCount == 0) {
+  if (length(commonWordCount) == 0) {
     ptag = paste("<p>", 'None Found</p>')
   }
   else if (commonWordCount >= 1 & commonWordCount < 6) {

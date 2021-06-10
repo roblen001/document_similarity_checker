@@ -11,7 +11,6 @@
 getHTML_proposalList <- function (df) {
   innerHTML <- '<div>'
   for (i in 1:nrow(df)) {
-    print(i)
     container <- "<div style='border: 1px solid grey; margin: 5px; display: flex; flex-direction: column; padding-left: 5px;'>"
     
     title <- paste('<p>Proposal title: ', paste(df[i,]$title, '</p>'))
@@ -26,7 +25,6 @@ getHTML_proposalList <- function (df) {
     container <- paste(container, paste(content, '</div>'))
     
     innerHTML <- paste(innerHTML, container)
-    print(innerHTML)
   }
   html <- paste(innerHTML, "</div></div>")
   return(html)

@@ -111,7 +111,6 @@ backend <- function(input, output, session){
       if (input$checkUsingPubResearch == 'Keywords'){
         # getting selected file name
         similar_proposal <- checkWithKeyWords_pubResearch(full_proposal_path(), input = input$keywordsList_pubResearch)
-        print(similar_proposal)
         proposalDF(similar_proposal)
         
       }else{
@@ -153,7 +152,6 @@ backend <- function(input, output, session){
   # renders the most similar file name in the div button
   output$pdfFileName <- renderUI ({
     # check if there is a similar file
-    print(identical(fileName()$most_similar_proposal, character(0)))
     if (identical(fileName()$most_similar_proposal, character(0)) == FALSE )  {
       HTML(getHTML_pdfName(fileName()))
     } else {
@@ -198,19 +196,12 @@ backend <- function(input, output, session){
   
   # renders similarity level dynamically
   output$similarityLevel <- renderUI({
-    if (identical(fileName()$most_similar_proposal, NULL) == FALSE )  {
-      HTML(getHTML_Similarity_indicator_otherproposal(amount_of_commonWords()))
-    } else {
-      HTML('<p>NO SIMILAR FILE FOUND</p>')
-    }
+    HTML(getHTML_Similarity_indicator_otherproposal(amount_of_commonWords()))
   })
   
   # renders similarity level dynamically
   output$similarityLevelPublishedPapers <- renderUI({
-    # check if there is a similar file 
-    if(identical(fileName()$most_similar_proposal, character(0)) == FALSE){
       HTML(getHTML_Similarity_indicator_publishedPapers(amount_of_commonWords_publishedPapers()))
-    }
   })
   
   # open most similar pdf file 

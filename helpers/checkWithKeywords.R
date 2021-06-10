@@ -21,6 +21,8 @@ checkWithKeywords <- function(filePath, input){
   input_word_list <- c(input_word_list, "ANSI3456DFBEEU1")
   for (word in input_word_list) {
     word <- trimws(word, which = "both")
+    # adding white space to make sure it finds individual word and not substring
+    word <- paste("", paste(word, ""))
     # adding leading and trailing whitespace to make sure we dont find word
     # subsets ie we DON'T want ai in pain we want ai == ai
     found <- sapply(word, grepl, corpus_raw$text)
@@ -33,37 +35,8 @@ checkWithKeywords <- function(filePath, input){
   corpus_raw$amount_of_commonWords <- amount_of_commonWords
   
   if (typeof(corpus_raw$amount_of_commonWords) != 'list'){
-      # #  if only a single word has been inputted 
-      # if (is.na(match(TRUE, corpus_raw[ , ncol(corpus_raw)-1])) == FALSE){
-      #   idx <- match(TRUE, corpus_raw[ , ncol(corpus_raw)-1])
-      #   row <- corpus_raw[idx,]
-      #   colnames(row)[length(row)] <- 'amount_of_wordsCommon'
-      #   results <- row[order(row$amount_of_wordsCommon, decreasing = TRUE),]
-      #   final_results <- results %>%
-      #     top_n(5)
-      #   ##Go through each row and determine if a value is zero
-      #   row_sub = apply(final_results, 1, function(row) all(row !=0 ))
-      #   ##Subset as usual
-      #   final_results <- final_results[row_sub,]
-      #   
-      #   # TODO: Optimize this
-      #   common_words <- c()
-      #   for (row in final_results$text) {
-      #     str_commonWords <- ''
-      #     for (word in input_word_list[[1]]) {
-      #       word <- trimws(word, which = "both")
-      #       if (grepl(word, row, fixed = TRUE)) {
-      #         str_commonWords <- paste(str_commonWords, word, sep = ", ")
-      #       }
-      #     }
-      #     common_words <- c(common_words, str_commonWords)
-      #   }
-      #   
-      #   final_results$common_words <- common_words 
-      # }else{
-        final_results <- "NO WORDS IN COMMON"
-      # }
-    }else{
+    final_results <- "NO WORDS IN COMMON"
+  }else{
     corpus_raw <- corpus_raw %>% unnest_auto(amount_of_commonWords) %>% unnest(cols = c(`FALSE`, `TRUE`))
     corpus_raw[is.na(corpus_raw)] <- 0
     colnames(corpus_raw)[length(corpus_raw)] <- 'amount_of_wordsCommon'
@@ -81,13 +54,15 @@ checkWithKeywords <- function(filePath, input){
       str_commonWords <- ''
       for (word in input_word_list[[1]]) {
         word <- trimws(word, which = "both")
+        # adding white space to make sure it finds individual word and not substring
+        word <- paste("", paste(word, ""))
         if (grepl(word, row, fixed = TRUE)) {
           str_commonWords <- paste(str_commonWords, word, sep = ", ")
         }
       }
       common_words <- c(common_words, str_commonWords)
     }
-    
+
     final_results$common_words <- common_words 
   }
   

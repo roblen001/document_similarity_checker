@@ -62,6 +62,8 @@ checkWithKeyWords_pubResearch <- function(dirPath='', input) {
       word <- trimws(word, which = "both")
       # adding leading and trailing whitespace to make sure we dont find word
       # subsets ie we DON'T want ai in pain we want ai == ai
+      # adding white space to make sure it finds individual word and not substring
+      word <- paste("", paste(word, ""))
       found <- sapply(word, grepl, corpus_raw$text)
       corpus_raw <- cbind(corpus_raw,found)
     }
@@ -69,7 +71,6 @@ checkWithKeyWords_pubResearch <- function(dirPath='', input) {
     # counting the amount of common keywords found in each proposal
     corpus_clean <- subset(corpus_raw, select = -c(title, text))
     amount_of_commonWords <- apply(corpus_clean,MARGIN = 1,table)
-    print(amount_of_commonWords)
     corpus_raw$amount_of_commonWords <- amount_of_commonWords
     
     if (typeof(corpus_raw$amount_of_commonWords) != 'list'){
