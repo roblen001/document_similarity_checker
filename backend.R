@@ -95,6 +95,20 @@ backend <- function(input, output, session){
     }
   )
   
+  # detects when the select input is changed
+  observeEvent(input$selectionType, {
+    shinyjs::hide("main_content")
+  })
+  
+  # detects when the select input is changed
+  observeEvent(input$checkUsing, {
+    shinyjs::hide("main_content")
+  })
+  
+  # detects when the select input is changed
+  observeEvent(input$checkUsingPubResearch, {
+    shinyjs::hide("main_content")
+  })
   # submit button
   observeEvent(input$BeginCheck, {
     if (input$selectionType == 'PublishedResearch'){

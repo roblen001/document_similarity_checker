@@ -62,7 +62,7 @@ checkWithKeyWords_pubResearch <- function(dirPath='', input) {
       word <- trimws(word, which = "both")
       # adding white space to make sure it finds individual word and not substring
       word <- paste("", paste(word, ""))
-      found <- sapply(word, grepl, corpus_raw$text)
+      found <- sapply(tolower(word), grepl, tolower(corpus_raw$text))
       corpus_raw <- cbind(corpus_raw,found)
     }
     
@@ -94,7 +94,7 @@ checkWithKeyWords_pubResearch <- function(dirPath='', input) {
           word <- trimws(word, which = "both")
           # adding white space to make sure it finds individual word and not substring
           word <- paste("", paste(word, ""))
-          if (grepl(word, row, fixed = TRUE)) {
+          if (grepl(tolower(word), tolower(row), fixed = TRUE)) {
             str_commonWords <- paste(str_commonWords, word, sep = ", ")
           }
         }

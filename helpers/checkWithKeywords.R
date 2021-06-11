@@ -23,7 +23,10 @@ checkWithKeywords <- function(filePath, input){
     word <- trimws(word, which = "both")
     # adding white space to make sure it finds individual word and not substring
     word <- paste("", paste(word, ""))
-    found <- sapply(word, grepl, corpus_raw$text)
+    # adding white space to the front of the text value so the first word
+    # can be counted as a word
+    corpus_raw$text <- paste(' ', corpus_raw$text)
+    found <- sapply(tolower(word), grepl, tolower(corpus_raw$text))
     corpus_raw <- cbind(corpus_raw,found)
   }
   
@@ -54,7 +57,7 @@ checkWithKeywords <- function(filePath, input){
         word <- trimws(word, which = "both")
         # adding white space to make sure it finds individual word and not substring
         word <- paste("", paste(word, ""))
-        if (grepl(word, row, fixed = TRUE)) {
+        if (grepl(tolower(word), tolower(row), fixed = TRUE)) {
           str_commonWords <- paste(str_commonWords, word, sep = ", ")
         }
       }
