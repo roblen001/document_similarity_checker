@@ -97,7 +97,7 @@ frontend <- function(){
                                              label = 'Click to select a proposal dataframe file',
                                              title = 'Please select a proposal dataframe file',
                                              multiple = FALSE,
-                                             icone = icon("file")
+                                             icon = icon("file")
                             ),
                             
                             verbatimTextOutput("DataframeProposalFileOutput", placeholder = TRUE),
