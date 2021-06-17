@@ -30,7 +30,7 @@ getSimilarProposalsFromCSV <- function(proposalDataFile='', idForFileBeingChecke
   if (proposalDataFile == '') {
     # do nothing
   } else {
-    corpus_raw <- read.csv(proposalDataFile)
+    corpus_raw <- read_csv(proposalDataFile)
     # the inputed dataframe should always have the same ordering ID, Author, Title, Background information
     colnames(corpus_raw) <- c('id', 'author', 'proposal_title', 'text')
     corpus_raw <- corpus_raw %>% select('id', 'author', 'proposal_title', 'text')
