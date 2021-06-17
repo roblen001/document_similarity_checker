@@ -11,7 +11,7 @@
 # Date: 2021-06-07
 #
 # ========================================================================================
-
+library(plyr)
 library(pdftools)
 require(readtext)
 library(textstem)
@@ -21,7 +21,6 @@ library(pluralize)
 library(naniar)
 library(data.table)
 library(purrr)
-library(plyr)
 
 # custom functions
 source('helpers/getPDFContent.R')
