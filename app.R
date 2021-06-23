@@ -6,6 +6,11 @@ library(shinycssloaders)
 source('frontend.R')
 source('backend.R')
 
+# FUNCTIONS THAT ARE NOT BEING USED IN THIS VERSION OF THE APP:
+# These fuctions can be used to check similar pdf files
+# checkWithKeyWords_pubResearch()
+# getPDFContent()
+# getSimilarProposal()
 
 ui <- fluidPage(
                 style='background-color: #F5F5F5; height: 100vh',
