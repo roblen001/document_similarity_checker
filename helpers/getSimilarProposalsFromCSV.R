@@ -26,7 +26,7 @@ source('helpers/getPDFContent.R')
 source('helpers/getCleanedAndTokenizedData.R')
 source('helpers/getCommonKeywords.R')
 
-getSimilarProposalsFromCSV <- function(proposalDataFile='', idForFileBeingChecked='') {
+getSimilarProposalsFromCSV <- function(proposalDataFile='', idForFileBeingChecked='', background_info='') {
   if (proposalDataFile == '') {
     # do nothing
   } else {
@@ -34,11 +34,18 @@ getSimilarProposalsFromCSV <- function(proposalDataFile='', idForFileBeingChecke
     # the inputed dataframe should always have the same ordering ID, Author, Title, Background information
     colnames(corpus_raw) <- c('id', 'author', 'proposal_title', 'text')
     corpus_raw <- corpus_raw %>% select('id', 'author', 'proposal_title', 'text')
+    # assumes the checkUsing "backgroundinfo" was selected
+    if (background_info != ''){
+      df <-data.frame("TEMPORARYID16352","TEMPORARYAUTHOR16352", "TEMPORARYTITLE16352", background_info)
+      names(df) <- c('id', 'author', 'proposal_title', 'text')
+      corpus_raw <- rbind(corpus_raw, df)
+    }
     custom_bigram_stop_words <- c('university press', 'citing article', 'https www.tandfonline.com', 'NA NA')
     custom_stop_words <- c('copyright', 'https', 'NA', 'doi')
     # Will return a wide format dataframe with proposals as rows, words as columns
     # and occurence of keywords in the proposal (NA means none)
     corpus_cleaned <- getCleanedAndTokenizedData(corpus_raw, custom_bigram_stop_words, custom_stop_words, type='OtherProposals')
+
     #  giving the amount of keywords a weight
     visualize_matrix <- subset(corpus_cleaned, select = -c(id) )
     visualize_matrix[is.na((visualize_matrix))] <- 0
@@ -65,7 +72,7 @@ getSimilarProposalsFromCSV <- function(proposalDataFile='', idForFileBeingChecke
     colnames(similar_articles) <- c("id", "most_similar_proposal", "common_words_weighted")
     similar_articles_with_common_word_lst <- getCommonKeywords(corpus_cleaned, similar_articles)
     results <- similar_articles_with_common_word_lst %>% filter(proposal_title == idForFileBeingChecked)
-    
+    print(results)
 
     return(results)
   }

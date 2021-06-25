@@ -72,7 +72,8 @@ backend <- function(input, output, session){
         proposalDF(similar_proposal)
       }else if (input$checkUsing == 'ProposalId'){
         # getting selected file name
-        similar_proposal <- getSimilarProposalsFromCSV(proposalDataFile = proposal_df_path$datapath, idForFileBeingChecked=input$proposalID)
+        similar_proposal <- getSimilarProposalsFromCSV(proposalDataFile = proposal_df_path$datapath, 
+                                                       idForFileBeingChecked=input$proposalID)
         commonKeyWords_OtherProposals(unlist(similar_proposal[4]))
         amount_of_commonWords(similar_proposal$common_words_weighted)
         # getting the title of the most similar proposal
@@ -80,6 +81,19 @@ backend <- function(input, output, session){
         colnames(corpus_raw) <- c('id', 'author', 'proposal_title', 'text')
         title <- corpus_raw[corpus_raw$id == similar_proposal$most_similar_proposal ,]$proposal_title
         proposalTitle(title) 
+      } else if (input$checkUsing == "BackgroundInformation") {
+        # getting selected file name
+        similar_proposal <- getSimilarProposalsFromCSV(proposalDataFile = proposal_df_path$datapath, 
+                                                       idForFileBeingChecked='TEMPORARYID16352',
+                                                       background_info=input$backgroundInformation)
+        commonKeyWords_OtherProposals(unlist(similar_proposal[4]))
+        amount_of_commonWords(similar_proposal$common_words_weighted)
+        # getting the title of the most similar proposal
+        corpus_raw <- read.csv(proposal_df_path$datapath)
+        colnames(corpus_raw) <- c('id', 'author', 'proposal_title', 'text')
+        title <- corpus_raw[corpus_raw$id == similar_proposal$most_similar_proposal ,]$proposal_title
+        proposalTitle(title) 
+        print(title)
       }
       load_data()
     

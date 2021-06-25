@@ -31,52 +31,63 @@ frontend <- function(){
                 padding-top: 5vh',
           width = 6,
          
-         # UI for input for "Other Proposal" selection
-                            # User Selects if they want to test using keywords on
-                            # proposal id
-                            selectInput(
-                              inputId = 'checkUsing', 'Check Using:',
-                              c('--Please Make A Selection--' = 'default',
-                                'Keywords' = 'Keywords',
-                                'Proposal Id' = 'ProposalId')
-                            ),
-                          # Select file with the proposal to be checked
-                          conditionalPanel(
-                            condition = "input.checkUsing != 'default'",
-                     
-                            shinyFilesButton(id = "DataframeProposalFile",
-                                             label = 'Click to select a proposal dataframe file',
-                                             title = 'Please select a proposal dataframe file',
-                                             multiple = FALSE,
-                                             icon = icon("file")
-                            ),
-                            
-                            verbatimTextOutput("DataframeProposalFileOutput", placeholder = TRUE),
-                            
-                            br(),
-                            conditionalPanel(condition = "input.checkUsing == 'ProposalId'",
-                                             # Text input where users put the id of the proposal to compare
-                                             textInput(inputId = 'proposalID', label = 'Input proposal id:',
-                                                       placeholder = 'input proposal id.'),
-                                             ),
-                            
-                          ),
-                          
-                          # Select file with the proposal to be checked
-                          conditionalPanel(
-                            condition = "input.checkUsing == 'Keywords'",
-                            
-                            p('Seperate the keywords with commas for them to count
-                              as seperate words'),
-                            
-                            textAreaInput(inputId = "keywordsList", label = "Input Keywords:", 
-                                          width = "1000px", height="200px",
-                                          placeholder = "ex: Deep Learning,ai, ONDRI Neuropsychology Platform 
-                                          "),
-                            
-                          ),
-                          
-                          
+            # User Selects if they want to test using keywords on
+            # proposal id
+            selectInput(
+              inputId = 'checkUsing', 'Check Using:',
+              c('--Please Make A Selection--' = 'default',
+                'Keywords' = 'Keywords',
+                'Proposal Id' = 'ProposalId',
+                'Background Information' = 'BackgroundInformation')
+            ),
+          # Select file with the proposal to be checked
+          conditionalPanel(
+            condition = "input.checkUsing != 'default'",
+     
+            shinyFilesButton(id = "DataframeProposalFile",
+                             label = 'Click to select a proposal dataframe file',
+                             title = 'Please select a proposal dataframe file',
+                             multiple = FALSE,
+                             icon = icon("file")
+            ),
+            
+            verbatimTextOutput("DataframeProposalFileOutput", placeholder = TRUE),
+            
+            br(),
+            conditionalPanel(condition = "input.checkUsing == 'ProposalId'",
+                             # Text input where users put the id of the proposal to compare
+                             textInput(inputId = 'proposalID', label = 'Input proposal id:',
+                                       placeholder = 'input proposal id.'),
+                             ),
+            
+          ),
+          
+          # Select file with the proposal to be checked
+          conditionalPanel(
+            condition = "input.checkUsing == 'Keywords'",
+            
+            p('Seperate the keywords with commas for them to count
+              as seperate words'),
+            
+            textAreaInput(inputId = "keywordsList", label = "Input Keywords:", 
+                          width = "1000px", height="200px",
+                          placeholder = "ex: Deep Learning,ai, ONDRI Neuropsychology Platform 
+                          "),
+            
+          ),
+         
+         # check using text area
+         conditionalPanel(
+           condition = "input.checkUsing == 'BackgroundInformation'",
+
+           p('Input proposal background information into the text box'),
+
+           textAreaInput(inputId = "backgroundInformation", label = "Input Background Information:",
+                         width = "1000px", height="200px"),
+
+         ),
+
+
          
          conditionalPanel("input.checkUsing != 'default'",
                           # Action button will only be showed once and input selection is made
