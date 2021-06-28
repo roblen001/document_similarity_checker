@@ -38,7 +38,8 @@ frontend <- function(){
               c('--Please Make A Selection--' = 'default',
                 'Keywords' = 'Keywords',
                 'Proposal Id' = 'ProposalId',
-                'Background Information' = 'BackgroundInformation')
+                'Background Information' = 'BackgroundInformation',
+                'Produce a Similarity Report' = 'SimilarityReport')
             ),
           # Select file with the proposal to be checked
           conditionalPanel(
@@ -76,6 +77,14 @@ frontend <- function(){
             
           ),
          
+         # check using a similarity report
+         conditionalPanel(
+           condition = "input.checkUsing == 'SimilarityReport'",
+           
+           p('Using this checking method will produce a pdf report of newly
+             submitted proposals against approved proposals'),
+                          ),
+         
          # check using text area
          conditionalPanel(
            condition = "input.checkUsing == 'BackgroundInformation'",
@@ -94,7 +103,7 @@ frontend <- function(){
                           actionButton(inputId = "BeginCheck",
                                        label = "Begin Check",
                                        style = "color: white; background-color: #81D3EA;"),
-                          )
+                          ),
         ),
       
 
@@ -115,21 +124,24 @@ frontend <- function(){
                          div(id='main_content',
                              style='height: 100%;
                                     width: 100%;',
-                             tags$h3('Most Similar Proposal Information:'),
+                             conditionalPanel(condition = "input.checkUsing != 'SimilarityReport'",
+                                              tags$h3('Most Similar Proposal Information:')
+                                              ),
                              # for keywords check other proposals
                              conditionalPanel(condition = "input.checkUsing == 'Keywords'",
                                               tags$div(style='height: 500px; border: 1px solid grey; overflow: scroll; background-color: white;',
                                                        uiOutput('proposalList')
                                               )
                                               ),
-                             # for keywords check published research
-                             conditionalPanel(condition = "input.checkUsingPubResearch == 'Keywords'",
-                                              tags$div(style='height: 500px; border: 1px solid grey; overflow: scroll; background-color: white;',
-                                                       uiOutput('proposalList_pubResearch')
+                             # for similarity report
+                             conditionalPanel(condition = "input.checkUsing == 'SimilarityReport'",
+                                              tags$div(style='height: 500px; display: flex; justify-content: center; align-items: center;',
+                                                       p('data has been compiled you can now download the html file'),
+                                                       
                                               )
                              ),
                              # if not Keywords check
-                             conditionalPanel(condition = "input.checkUsing != 'Keywords'",
+                             conditionalPanel(condition = "input.checkUsing != 'Keywords' & input.checkUsing != 'SimilarityReport'",
                                tags$div(style='height: 100%;',
                                         p('Proposal Title:'),
                                         uiOutput("proposalTitle"),
@@ -144,7 +156,8 @@ frontend <- function(){
                                          )
 
                                ),
-                             )
+                             ),
+                             
                              
                          )
                        )

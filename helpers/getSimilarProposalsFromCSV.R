@@ -26,7 +26,8 @@ source('helpers/getPDFContent.R')
 source('helpers/getCleanedAndTokenizedData.R')
 source('helpers/getCommonKeywords.R')
 
-getSimilarProposalsFromCSV <- function(proposalDataFile='', idForFileBeingChecked='', background_info='') {
+getSimilarProposalsFromCSV <- function(proposalDataFile='', idForFileBeingChecked='', 
+                                       background_info='', type='') {
   if (proposalDataFile == '') {
     # do nothing
   } else {
@@ -71,8 +72,12 @@ getSimilarProposalsFromCSV <- function(proposalDataFile='', idForFileBeingChecke
     similar_articles <- tibble(corpus_cleaned$id, most_related_articles, max_values)
     colnames(similar_articles) <- c("id", "most_similar_proposal", "common_words_weighted")
     similar_articles_with_common_word_lst <- getCommonKeywords(corpus_cleaned, similar_articles)
-    results <- similar_articles_with_common_word_lst %>% filter(proposal_title == idForFileBeingChecked)
-    print(results)
+    
+    if (type == 'SimilarityReport'){
+      results <- similar_articles_with_common_word_lst
+    }else{
+      results <- similar_articles_with_common_word_lst %>% filter(proposal_title == idForFileBeingChecked)
+    }
 
     return(results)
   }

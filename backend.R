@@ -27,6 +27,7 @@ backend <- function(input, output, session){
   amount_of_commonWords <- reactiveVal(0)
   amount_of_commonWords_publishedPapers <- reactiveVal(0)
   proposalDF <- reactiveVal()
+  similar_articles_df <- reactiveVal()
   
   # Computer volumes depend on OS: Windows, Mac, or Linux.
   volumes <- c(Home = fs::path_home(), getVolumes()())
@@ -93,11 +94,18 @@ backend <- function(input, output, session){
         colnames(corpus_raw) <- c('id', 'author', 'proposal_title', 'text')
         title <- corpus_raw[corpus_raw$id == similar_proposal$most_similar_proposal ,]$proposal_title
         proposalTitle(title) 
-        print(title)
+      } else if (input$checkUsing == "SimilarityReport"){
+        proposal_df_path =  parseFilePaths(volumes, input$DataframeProposalFile)
+        similar_articles_df(getSimilarProposalsFromCSV(proposalDataFile = proposal_df_path$datapath, 
+                                   type = 'SimilarityReport'))
       }
       load_data()
-    
   })
+  
+  #  IN DEV MODE ====================================================
+  
+  
+  #  END DEV MODE ====================================================
   
   # renders common keywords
   output$KeywordsOtherProposal <- renderUI ({
