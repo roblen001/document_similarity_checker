@@ -1,5 +1,44 @@
-```{r plot, fig.height=5}
-par(mar = c(4, 4, 1, 1))
-plot(regFormula(), data = mtcars, pch = 19, col = 'gray')
-abline(fit, col = 'red', lwd = 2)
+---
+site: "bookdown::bookdown_site"
+output:
+  bookdown::pdf_book:
+    keep_tex: no
+params:
+  title: '[TITLE HERE]'
+  author: '[AUTHOR HERE]'
+  date: '[DATE HERE]'
+  description: '[DESCRIPTION HERE]'
+# To show all the references with no in-text citations, please uncomment this line of code.
+#nocite: '@*'
+# If you want some (not all) references with no in-text citations, please uncomment this line of code and modify.
+#nocite: | 
+#  @item1, @item2
+---
+
+```{r include=FALSE}
+# Libraries to load here.
+library(knitr)
+library(ggplot2)
+```
+
+---
+header-includes:
+- \usepackage{titling}
+- \pretitle{\begin{center}\vspace{-1.3cm}\LARGE\includegraphics[width=5cm]{ONDRI_full-logo_web.png}\\[\bigskipamount]\hfill\break}
+- \posttitle{\end{center}}
+- \preauthor{\begin{center} \vspace{0.3cm}}
+- \postauthor{\vspace{0.3cm} \end{center}}
+- \predate{\begin{center}}
+- \postdate{\\[\bigskipamount] \vspace{0.3cm} \hrulefill \end{center} \vspace{0.6cm} `r params$description`}
+title: `r params$title`
+author: `r params$author`
+date: `r params$date`
+documentclass: article
+fontsize: 10pt
+geometry: margin=2.54cm
+---
+
+```{r, include=FALSE}
+# copy the R logo to the current directory
+file.copy(file.path('C:/document_similarity_checker/www/ONDRI_full-logo_web.png'), '.')
 ```
