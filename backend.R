@@ -28,6 +28,7 @@ backend <- function(input, output, session){
   amount_of_commonWords_publishedPapers <- reactiveVal(0)
   proposalDF <- reactiveVal()
   similar_articles_df <- reactiveVal()
+  DataframeProposalFile <- reactive({input$DataframeProposalFile})
   
   # Computer volumes depend on OS: Windows, Mac, or Linux.
   volumes <- c(Home = fs::path_home(), getVolumes()())
@@ -104,21 +105,8 @@ backend <- function(input, output, session){
   
   #  IN DEV MODE ====================================================
   
-  regFormula <- reactive({
-    as.formula(paste('mpg ~', input$x))
-  })
-  
-  output$regPlot <- renderPlot({
-    par(mar = c(4, 4, .1, .1))
-    plot(regFormula(), data = mtcars, pch = 19)
-  })
-  
   output$downloadReport <- downloadHandler(
-    filename = function() {
-      paste('my-report', sep = '.', switch(
-        input$format, PDF = 'pdf', HTML = 'html', Word = 'docx'
-      ))
-    },
+    filename = 'similarity-report.pdf',
     
     content = function(file) {
       src <- normalizePath('report.Rmd')
@@ -130,10 +118,7 @@ backend <- function(input, output, session){
       file.copy(src, 'report.Rmd', overwrite = TRUE)
       
       library(rmarkdown)
-      out <- render('report.Rmd', switch(
-        input$format,
-        PDF = pdf_document(), HTML = html_document(), Word = word_document()
-      ))
+      out <- render('report.Rmd', pdf_document())
       file.rename(out, file)
     }
   )

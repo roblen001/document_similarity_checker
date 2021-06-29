@@ -74,7 +74,19 @@ getSimilarProposalsFromCSV <- function(proposalDataFile='', idForFileBeingChecke
     similar_articles_with_common_word_lst <- getCommonKeywords(corpus_cleaned, similar_articles)
     
     if (type == 'SimilarityReport'){
+      # reformatting results dataframe for similarity report
       results <- similar_articles_with_common_word_lst
+      results <- merge(x=results, y=corpus_raw, by.x='proposal_title', by.y='id')
+      results <- results %>% select(-text, -proposal_title)
+      colnames(results) <- c("most_similar_proposal", "common_words_weighted", "common_words_list",
+                             "author_of_proposal_title", "proposal_title")
+      results <- merge(x=results, y=corpus_raw, by.x='most_similar_proposal', by.y='id')
+      results <- results %>% select(-text, -most_similar_proposal)
+      colnames(results) <- c("common_words_weighted", "common_words_list",
+                             "author_of_proposal_title", "proposal_title", 
+                             "author_of_most_similar_proposal", "most_similar_proposal_title")
+      print(colnames(results))
+      
     }else{
       results <- similar_articles_with_common_word_lst %>% filter(proposal_title == idForFileBeingChecked)
     }

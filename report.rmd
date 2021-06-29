@@ -4,10 +4,10 @@ output:
   bookdown::pdf_book:
     keep_tex: no
 params:
-  title: '[TITLE HERE]'
-  author: '[AUTHOR HERE]'
-  date: '[DATE HERE]'
-  description: '[DESCRIPTION HERE]'
+  title: 'Proposal Similarity Report'
+  # author: '[AUTHOR HERE]'
+  date: '[Date]'
+  description: 'This report checks the similarity between previously approved proposals against newly submitted proposals.'
 # To show all the references with no in-text citations, please uncomment this line of code.
 #nocite: '@*'
 # If you want some (not all) references with no in-text citations, please uncomment this line of code and modify.
@@ -15,12 +15,14 @@ params:
 #  @item1, @item2
 ---
 
+
 ```{r include=FALSE}
 # Libraries to load here.
 library(knitr)
-library(ggplot2)
-```
+library(kableExtra)
 
+date <- Sys.Date()
+```
 ---
 header-includes:
 - \usepackage{titling}
@@ -32,13 +34,58 @@ header-includes:
 - \postdate{\\[\bigskipamount] \vspace{0.3cm} \hrulefill \end{center} \vspace{0.6cm} `r params$description`}
 title: `r params$title`
 author: `r params$author`
-date: `r params$date`
+date: `r date`
 documentclass: article
 fontsize: 10pt
 geometry: margin=2.54cm
 ---
 
 ```{r, include=FALSE}
-# copy the R logo to the current directory
+# copy the logo to the current directory
 file.copy(file.path('C:/document_similarity_checker/www/ONDRI_full-logo_web.png'), '.')
+```
+
+```{r, echo=FALSE}
+data <- similar_articles_df()[order(-similar_articles_df()$common_words_weighted),]
+```
+
+```{r, results='asis', echo=FALSE}
+for (i in 1:length(data$proposal_title)){
+   cat('\n')  
+   cat("Proposal Title:", data$proposal_title[i], "\n")
+   cat('\n') 
+   cat('\n')  
+   cat("Author of Proposal:", data$author_of_proposal_title[i], "\n")
+   cat('\n') 
+   cat("Similar Proposal Title:", data$most_similar_proposal_title[i], "\n")
+   cat('\n') 
+   cat('\n')
+   cat("Author of Similar Proposal:", data$common_words_weighted[i], "\n")
+   cat('\n')
+   if (length(data$common_words_weighted[i]) == 0) {
+      cat('\n')
+      cat("Similarity Indicator:","NOT SIMILAR", "\n")
+      cat('\n')
+   }
+     else if (data$common_words_weighted[i] >= 1 & data$common_words_weighted[i] < 6) {
+       cat('\n')
+       cat("Similarity Indicator:","NOT VERY SIMILAR", "\n")
+       cat('\n')
+   }
+     else if (data$common_words_weighted[i] >= 6 & data$common_words_weighted[i] < 10) {
+       cat('\n')
+       cat("Similarity Indicator:","SOME SIMILARITY", "\n")
+       cat('\n')
+   } else if (data$common_words_weighted[i] >= 10) {
+       cat('\n')
+       cat("Similarity Indicator:","SIMILAR", "\n")
+       cat('\n')
+   }
+   cat("Amount of Common Words:", data$author_of_most_similar_proposal[i], "\n")
+   cat('\n') 
+   cat('\n')
+   cat("Common Words List:", paste(unlist(data$common_words_list[i]), collapse=', '), '\n')
+   cat('\n') 
+   cat("---------------------------------------------------", '\n')
+}
 ```

@@ -136,12 +136,7 @@ frontend <- function(){
                              # for similarity report
                              conditionalPanel(condition = "input.checkUsing == 'SimilarityReport'",
                                               tags$div(style='height: 500px; display: flex; justify-content: center; align-items: center;',
-                                                       p('data has been compiled you can now download the html file'),
-                                                       helpText(),
-                                                       selectInput('x', 'Build a regression model of mpg against:',
-                                                                   choices = names(mtcars)[-1]),
-                                                       radioButtons('format', 'Document format', c('PDF', 'HTML', 'Word'),
-                                                                    inline = TRUE),
+                                                       p('data has been compiled you can now download the pdf file'),
                                                        downloadButton('downloadReport')
                                                        
                                               )
