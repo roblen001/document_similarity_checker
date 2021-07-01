@@ -32,8 +32,10 @@ getSimilarProposalsFromCSV <- function(proposalDataFile='', idForFileBeingChecke
     # do nothing
   } else {
     corpus_raw <- read_csv(proposalDataFile)
+    print(length(colnames(corpus_raw)))
     # the inputed dataframe should always have the same ordering ID, Author, Title, Background information
-    colnames(corpus_raw) <- c('id', 'author', 'proposal_title', 'text')
+    colnames(corpus_raw) <- c('id', 'author', 'proposal_title', 'background', 'hypothesis', 'variables', 'analysis', 'significance')
+    corpus_raw$text<- with(corpus_raw, paste0(background, hypothesis, significance))
     corpus_raw <- corpus_raw %>% select('id', 'author', 'proposal_title', 'text')
     # assumes the checkUsing "backgroundinfo" was selected
     if (background_info != ''){
