@@ -11,8 +11,12 @@
 
 checkWithKeywords <- function(filePath, input){
   data <- read.csv(filePath)
-  colnames(data) <- c('id','author', 'title', 'text')
-  corpus_raw <- data %>% select('id', 'author', 'title', 'text')
+  colnames(data) <- c('id','author', 'title', 'background', 'hypothesis', 'variables', 'analysis', 'significance',
+                      'Keyword 1', 'Keyword 2', 'Keyword 3', 'Keyword 4', 'Keyword 5', 'status')
+  data$text<- with(data, paste0(background, hypothesis, significance))
+  corpus_raw <- data %>% select('id', 'author', 'title', 'text', 'status')
+  corpus_raw <- corpus_raw %>%
+    filter(status == "Approved")
 
   # separating input into list of words
   input_word_list <- as.list(strsplit(input, ","))

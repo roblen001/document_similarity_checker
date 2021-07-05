@@ -2,6 +2,7 @@ library(shiny)
 library(shinyFiles)
 library(shinyjs)
 library(shinycssloaders)
+library(tinytex)
 
 source('frontend.R')
 source('backend.R')
