@@ -18,8 +18,8 @@ params:
 
 ```{r include=FALSE}
 # Libraries to load here.
-library(knitr)
-library(kableExtra)
+# library(knitr)
+# library(kableExtra)
 
 date <- Sys.Date()
 ```

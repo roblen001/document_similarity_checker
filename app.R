@@ -1,8 +1,12 @@
-library(shiny)
 library(shinyFiles)
 library(shinyjs)
 library(shinycssloaders)
-library(tinytex)
+library(rmarkdown)
+library(tidytext)
+library(tidyverse)
+library(pluralize)
+library(data.table)
+
 
 source('frontend.R')
 source('backend.R')

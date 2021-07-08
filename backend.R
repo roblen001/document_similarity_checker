@@ -117,7 +117,6 @@ backend <- function(input, output, session){
       on.exit(setwd(owd))
       file.copy(src, 'report.Rmd', overwrite = TRUE)
       
-      library(rmarkdown)
       out <- render('report.Rmd', pdf_document())
       file.rename(out, file)
     }

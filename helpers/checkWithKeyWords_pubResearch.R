@@ -11,16 +11,6 @@
 # Date: 2021-06-07
 #
 # ========================================================================================
-library(plyr)
-library(pdftools)
-require(readtext)
-library(textstem)
-library(tidytext)
-library(tidyverse)
-library(pluralize)
-library(naniar)
-library(data.table)
-library(purrr)
 
 # custom functions
 source('helpers/getPDFContent.R')
