@@ -42,7 +42,8 @@ geometry: margin=2.54cm
 
 ```{r, include=FALSE}
 # copy the logo to the current directory
-file.copy(file.path('C:/document_similarity_checker/www/ONDRI_full-logo_web.png'), '.')
+print(report_path())
+file.copy(file.path(report_path()), '.')
 ```
 
 ```{r, echo=FALSE}
@@ -60,7 +61,7 @@ for (i in 1:length(data$proposal_title)){
    cat("Similar Proposal Title:", data$most_similar_proposal_title[i], "\n")
    cat('\n') 
    cat('\n')
-   cat("Author of Similar Proposal:", data$common_words_weighted[i], "\n")
+   cat("Amount of Common Words:", data$common_words_weighted[i], "\n")
    cat('\n')
    if (length(data$common_words_weighted[i]) == 0) {
       cat('\n')
@@ -81,7 +82,7 @@ for (i in 1:length(data$proposal_title)){
        cat("Similarity Indicator:","SIMILAR", "\n")
        cat('\n')
    }
-   cat("Amount of Common Words:", data$author_of_most_similar_proposal[i], "\n")
+   cat("Author of Similar Proposal:", data$author_of_most_similar_proposal[i], "\n")
    cat('\n') 
    cat('\n')
    cat("Common Words List:", paste(unlist(data$common_words_list[i]), collapse=', '), '\n')

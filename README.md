@@ -1,1 +1,0 @@
-document_similarity_checker

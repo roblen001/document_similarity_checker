@@ -1,4 +1,4 @@
-# checkWithKeywords.R 
+# checkWithKeywords.R
 #
 # Purpose: Will find the proposals containing the largest amount of the inputed
 #   keywords
@@ -33,12 +33,12 @@ checkWithKeywords <- function(filePath, input){
     found <- sapply(tolower(word), grepl, tolower(corpus_raw$text))
     corpus_raw <- cbind(corpus_raw,found)
   }
-  
+
   # counting the amount of common keywords found in each proposal
   corpus_clean <- subset(corpus_raw, select = -c(id, text, title, author) )
   amount_of_commonWords <- apply(corpus_clean,MARGIN=1,table)
   corpus_raw$amount_of_commonWords <- amount_of_commonWords
-  
+
   if (typeof(corpus_raw$amount_of_commonWords) != 'list'){
     final_results <- "NO WORDS IN COMMON"
   }else{
@@ -52,7 +52,7 @@ checkWithKeywords <- function(filePath, input){
     row_sub = apply(final_results, 1, function(row) all(row !=0 ))
     ##Subset as usual
     final_results <- final_results[row_sub,]
-    
+
     # TODO: Optimize this
     common_words <- c()
     for (row in final_results$text) {
@@ -68,8 +68,8 @@ checkWithKeywords <- function(filePath, input){
       common_words <- c(common_words, str_commonWords)
     }
 
-    final_results$common_words <- common_words 
+    final_results$common_words <- common_words
   }
-  
+
   return(final_results)
 }
