@@ -15,31 +15,38 @@
 # getPDFContent()
 # getSimilarProposal()
 
+library("tidyverse")
+shiny::addResourcePath("www", system.file("www", package = "ProposalSimilarityChecker"))
+
+ui <- shiny::fluidPage(
+  style='background-color: #F5F5F5; height: 100vh',
+  # Create title with logo.
+  shiny::titlePanel(title = shiny::tags$div(
+    shiny::img(style="width: 278px; height: 100px;",
+               src = "C:/document_similarity_checker/ProposalSimilarityChecker/inst/www/ONDRI_full-logo_web.png"),
+    "ONDRI Proposal Checker Application"),
+    windowTitle = "ONDRI Proposal Similarity Checker Application"),
+
+  frontend()
+
+)
+
+# Define server logic (back end).
+server <- function(input, output, session) {
+
+  session$onSessionEnded(stopApp)
+  backend(input, output, session)
+
+}
+
 runApp <- function(options = list()){
-  library("tidyverse")
-  shiny::addResourcePath("www", system.file("www", package = "ProposalSimilarityChecker"))
-
-  ui <- shiny::fluidPage(
-    style='background-color: #F5F5F5; height: 100vh',
-    # Create title with logo.
-    shiny::titlePanel(title = shiny::tags$div(
-      shiny::img(style="width: 278px; height: 100px;",
-          src = "www/ONDRI_full-logo_web.png"),
-      "ONDRI Proposal Checker Application"),
-      windowTitle = "ONDRI Proposal Similarity Checker Application"),
-
-    frontend()
-
-  )
-
-  # Define server logic (back end).
-  server <- function(input, output, session) {
-
-    session$onSessionEnded(stopApp)
-    backend(input, output, session)
-
-  }
+  shiny::shinyApp(ui = ui,
+                  server = server,
+                  options = options)
 
   # Run the application.
   shiny::shinyApp(ui, server, options = list(display.mode = "normal", launch.browser = TRUE))
 }
+
+
+
