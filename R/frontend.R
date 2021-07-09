@@ -129,13 +129,13 @@ frontend <- function(){
                                               ),
                              # for keywords check other proposals
                    shiny::conditionalPanel(condition = "input.checkUsing == 'Keywords'",
-                                           shiny::tags$div(style='height: 500px; border: 1px solid grey; overflow: scroll; background-color: white;',
+                                           shiny::tags$div(style='height: 50vh; border: 1px solid grey; overflow: scroll; background-color: white;',
                                                            shiny::uiOutput('proposalList')
                                               )
                                               ),
                              # for similarity report
                    shiny::conditionalPanel(condition = "input.checkUsing == 'SimilarityReport'",
-                                           shiny::tags$div(style='height: 500px; display: flex; justify-content: center; align-items: center;
+                                           shiny::tags$div(style='height: 50vh; display: flex; justify-content: center; align-items: center;
                                                            display: flex; flex-direction: column',
                                                            shiny::p('Data has been compiled you can now download the pdf file'),
                                                            shiny::downloadButton('downloadReport')
@@ -153,7 +153,7 @@ frontend <- function(){
 
                                         # keyword output
                                         shiny::p('Common Keywords:'),
-                                        shiny::tags$div(style='height: 250px; border: 1px solid grey; overflow: scroll; background-color: white;',
+                                        shiny::tags$div(style='height: 30vh; border: 1px solid grey; overflow: scroll; background-color: white;',
                                                         shiny::uiOutput('KeywordsOtherProposal')
                                          )
 

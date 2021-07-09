@@ -33,12 +33,10 @@ checkWithKeywords <- function(filePath, input){
     found <- sapply(tolower(word), grepl, tolower(corpus_raw$text))
     corpus_raw <- cbind(corpus_raw,found)
   }
-
   # counting the amount of common keywords found in each proposal
-  corpus_clean <- subset(corpus_raw, select = -c(id, text, title, author) )
+  corpus_clean <- subset(corpus_raw, select = -c(id, text, title, author, status) )
   amount_of_commonWords <- apply(corpus_clean,MARGIN=1,table)
   corpus_raw$amount_of_commonWords <- amount_of_commonWords
-
   if (typeof(corpus_raw$amount_of_commonWords) != 'list'){
     final_results <- "NO WORDS IN COMMON"
   }else{
