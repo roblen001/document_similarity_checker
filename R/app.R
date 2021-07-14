@@ -12,7 +12,7 @@
 
 runApp <- function(options = list()){
   shiny::addResourcePath("www", system.file("www", package = "ProposalSimilarityChecker"))
-
+  library(tidyverse)
   ui <- shiny::fluidPage(
     style='background-color:  #F5F5F5; height: 100vh;',
     # Create title with logo.
