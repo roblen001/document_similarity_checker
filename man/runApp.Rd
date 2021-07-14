@@ -4,7 +4,7 @@
 \alias{runApp}
 \title{runApp}
 \usage{
-runApp()
+runApp(options = list())
 }
 \description{
 A function for running the ONDRI Proposal Similarity Checker ShinyApp.

@@ -10,29 +10,28 @@
 
 backend <- function(input, output, session){
   # creating empty state
-  full_proposal_path <- reactiveVal()
-  fileName <- reactiveVal()
-  commonKeyWords <- reactiveVal('')
-  selectedFilePath <- reactiveVal('')
-  proposalTitle <- reactiveVal('')
-  commonKeyWords_OtherProposals <- reactiveVal('')
-  amount_of_commonWords <- reactiveVal(0)
-  amount_of_commonWords_publishedPapers <- reactiveVal(0)
-  proposalDF <- reactiveVal()
-  similar_articles_df <- reactiveVal()
-  DataframeProposalFile <- reactive({input$DataframeProposalFile})
+  full_proposal_path <- shiny::reactiveVal()
+  fileName <- shiny::reactiveVal()
+  commonKeyWords <- shiny::reactiveVal('')
+  selectedFilePath <- shiny::reactiveVal('')
+  proposalTitle <- shiny::reactiveVal('')
+  commonKeyWords_OtherProposals <- shiny::reactiveVal('')
+  amount_of_commonWords <- shiny::reactiveVal(0)
+  amount_of_commonWords_publishedPapers <- shiny::reactiveVal(0)
+  proposalDF <- shiny::reactiveVal()
+  similar_articles_df <- shiny::reactiveVal()
+  DataframeProposalFile <- shiny::reactive({input$DataframeProposalFile})
   # getting working directory of report.rmd file
   report_path_src <- paste(getwd(), "/inst/www/ONDRI_full-logo_web.png", sep="")
-  report_path <- reactive({report_path_src})
-  print(report_path)
+  report_path <- shiny::reactive({report_path_src})
   # Computer volumes depend on OS: Windows, Mac, or Linux.
   volumes <- c(Home = fs::path_home(), shinyFiles::getVolumes()())
 
   shinyFiles::shinyFileChoose(input, id = "proposalFile", roots = volumes, filetypes = c("pdf"))
-  output$proposalFileOutput <- renderText("No proposal file selected.")
+  output$proposalFileOutput <- shiny::renderText("No proposal file selected.")
 
   shinyFiles::shinyFileChoose(input, id = "DataframeProposalFile", roots = volumes, filetypes = c("csv"))
-  output$DataframeProposalFileOutput <- renderText("No proposal dataframe file selected.")
+  output$DataframeProposalFileOutput <- shiny::renderText("No proposal dataframe file selected.")
 
   #  FOR OTHER PROPOSAL SELECTION INPUT TYPE
   # 1) Select file containing proposal dataframe
@@ -41,12 +40,12 @@ backend <- function(input, output, session){
       proposalDFPath <- shinyFiles::parseDirPath(volumes, input$DataframeProposalFile)
 
       # Reset output when selection of directory is canceled.
-      output$DataframeProposalFileOutput <- renderText("No file selected.")
+      output$DataframeProposalFileOutput <- shiny::renderText("No file selected.")
 
       # Otherwise if directory has been selected, print path of directory to screen.
       if (length(proposalDFPath) > 0){
         # Update output by printing new directory path.
-        output$DataframeProposalFileOutput <- renderPrint(proposalDFPath)
+        output$DataframeProposalFileOutput <- shiny::renderPrint(proposalDFPath)
       }
     }
   )

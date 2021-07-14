@@ -14,7 +14,7 @@ checkWithKeywords <- function(filePath, input){
   colnames(data) <- c('id','author', 'title', 'background', 'hypothesis', 'variables', 'analysis', 'significance',
                       'Keyword 1', 'Keyword 2', 'Keyword 3', 'Keyword 4', 'Keyword 5', 'status')
   data$text<- with(data, paste0(background, hypothesis, significance))
-  corpus_raw <- data %>% select('id', 'author', 'title', 'text', 'status')
+  corpus_raw <- data %>% dplyr::select('id', 'author', 'title', 'text', 'status')
   corpus_raw <- corpus_raw %>%
     filter(status == "Approved")
 
@@ -40,7 +40,7 @@ checkWithKeywords <- function(filePath, input){
   if (typeof(corpus_raw$amount_of_commonWords) != 'list'){
     final_results <- "NO WORDS IN COMMON"
   }else{
-    corpus_raw <- corpus_raw %>% unnest_auto(amount_of_commonWords) %>% unnest(cols = c(`FALSE`, `TRUE`))
+    corpus_raw <- corpus_raw %>% tidyr::unnest_auto(amount_of_commonWords) %>% unnest(cols = c(`FALSE`, `TRUE`))
     corpus_raw[is.na(corpus_raw)] <- 0
     colnames(corpus_raw)[length(corpus_raw)] <- 'amount_of_wordsCommon'
     results <- corpus_raw[order(corpus_raw$amount_of_wordsCommon, decreasing = TRUE),]

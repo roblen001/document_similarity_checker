@@ -17,22 +17,22 @@ getSimilarProposalsFromCSV <- function(proposalDataFile='', idForFileBeingChecke
   if (proposalDataFile == '') {
     # do nothing
   } else {
-    corpus_raw <- read_csv(proposalDataFile)
+    corpus_raw <- readr::read_csv(proposalDataFile)
     # the inputed dataframe should always have the same ordering ID, Author, Title, Background information
     colnames(corpus_raw) <- c('id', 'author', 'proposal_title', 'background', 'hypothesis', 'variables', 'analysis', 'significance',
                               'Keyword 1', 'Keyword 2', 'Keyword 3', 'Keyword 4', 'Keyword 5', 'status')
     corpus_raw$text<- with(corpus_raw, paste0(background, hypothesis, significance))
     corpus_raw <- corpus_raw %>%
-      select('id', 'author', 'proposal_title', 'text', 'status')
+      dplyr::select('id', 'author', 'proposal_title', 'text', 'status')
 
     if (type != 'SimilarityReport'){
       corpus_raw <- corpus_raw %>%
-        filter(status == "Approved" | id == idForFileBeingChecked)
+        dplyr::filter(status == "Approved" | id == idForFileBeingChecked)
     }
     # assumes the checkUsing "backgroundinfo" was selected
     if (background_info != ''){
-      corpus_raw <- corpus_raw %>% select(-status)
-      df <-data.frame("TEMPORARYID16352","TEMPORARYAUTHOR16352", "TEMPORARYTITLE16352", background_info)
+      corpus_raw <- corpus_raw %>% dplyr::select(-status)
+      df <- data.frame("TEMPORARYID16352","TEMPORARYAUTHOR16352", "TEMPORARYTITLE16352", background_info)
       names(df) <- c('id', 'author', 'proposal_title', 'text')
       corpus_raw <- rbind(corpus_raw, df)
     }
@@ -71,17 +71,17 @@ getSimilarProposalsFromCSV <- function(proposalDataFile='', idForFileBeingChecke
       # reformatting results dataframe for similarity report
       results <- similar_articles_with_common_word_lst
       results <- merge(x=results, y=corpus_raw, by.x='proposal_title', by.y='id')
-      results <- results %>% filter(is.na(status))
-      results <- results %>% select(-text, -proposal_title, -status)
+      results <- results %>% dplyr::filter(is.na(status))
+      results <- results %>% dplyr::select(-text, -proposal_title, -status)
       colnames(results) <- c("most_similar_proposal", "common_words_weighted", "common_words_list",
                              "author_of_proposal_title", "proposal_title")
       results <- merge(x=results, y=corpus_raw, by.x='most_similar_proposal', by.y='id')
-      results <- results %>% select(-text, -most_similar_proposal)
+      results <- results %>% dplyr::select(-text, -most_similar_proposal)
       colnames(results) <- c("common_words_weighted", "common_words_list",
                              "author_of_proposal_title", "proposal_title",
                              "author_of_most_similar_proposal", "most_similar_proposal_title")
     }else{
-      results <- similar_articles_with_common_word_lst %>% filter(proposal_title == idForFileBeingChecked)
+      results <- similar_articles_with_common_word_lst %>% dplyr::filter(proposal_title == idForFileBeingChecked)
     }
 
     return(results)

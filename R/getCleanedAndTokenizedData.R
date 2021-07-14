@@ -17,12 +17,12 @@ getCleanedAndTokenizedData <- function(corpus_raw ,custom_bigram_stop_words, cus
     data(stop_words)
     corpus_clean <- corpus_raw %>%
       tidytext::unnest_tokens(word, text, token = "ngrams", n = 3)%>%
-      separate(word, c("word1", "word2", "word3"), sep = " ") %>%
-      filter(!word1 %in% c(stop_words$word, custom_stop_words)) %>%
-      filter(!word2 %in% c(stop_words$word, custom_stop_words)) %>%
-      filter(!word3 %in% c(stop_words$word, custom_stop_words)) %>%
-      unite(word, word1, word2, word3, sep = " ") %>%
-      filter(!word %in% custom_bigram_stop_words)
+      tidyr::separate(word, c("word1", "word2", "word3"), sep = " ") %>%
+      dplyr::filter(!word1 %in% c(stop_words$word, custom_stop_words)) %>%
+      dplyr::filter(!word2 %in% c(stop_words$word, custom_stop_words)) %>%
+      dplyr::filter(!word3 %in% c(stop_words$word, custom_stop_words)) %>%
+      tidyr::unite(word, word1, word2, word3, sep = " ") %>%
+      dplyr::filter(!word %in% custom_bigram_stop_words)
 
     corpus_clean$word <- singularize(corpus_clean$word)
     corpus_clean <- corpus_clean %>%
@@ -30,7 +30,7 @@ getCleanedAndTokenizedData <- function(corpus_raw ,custom_bigram_stop_words, cus
       dplyr::count(word, sort = TRUE)
 
     corpus_clean <- corpus_clean %>%
-      pivot_wider(names_from = word, values_from = n)
+      tidyr::pivot_wider(names_from = word, values_from = n)
 
     # remove cols with less then 2 NAs
     visualize <- corpus_clean[, which(colMeans(!is.na(corpus_clean)) > 1/length(corpus_clean$id))]

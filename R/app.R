@@ -9,14 +9,8 @@
 #' @export
 #'
 
-# FUNCTIONS THAT ARE NOT BEING USED IN THIS VERSION OF THE APP:
-# These fuctions can be used to check similar pdf files
-# checkWithKeyWords_pubResearch()
-# getPDFContent()
-# getSimilarProposal()
 
 runApp <- function(options = list()){
-  library("tidyverse")
   shiny::addResourcePath("www", system.file("www", package = "ProposalSimilarityChecker"))
 
   ui <- shiny::fluidPage(

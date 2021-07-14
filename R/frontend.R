@@ -67,8 +67,8 @@ frontend <- function(){
          shiny::conditionalPanel(
             condition = "input.checkUsing == 'Keywords'",
 
-            shiny::p('Seperate the keywords with commas for them to count
-              as seperate words'),
+            shiny::p('Separate the keywords with commas for them to count
+              as separate words'),
 
             shiny::textAreaInput(inputId = "keywordsList", label = "Input Keywords:",
                           width = "1000px", height="200px",

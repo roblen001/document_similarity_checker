@@ -7,7 +7,7 @@
 #'
 installPackages <- function(){
 
-  install.packages(c("shiny","shinyFiles", "shinyjs", "shinycssloaders", "rmarkdown", "tidytext",
+  utils::install.packages(c("shiny","shinyFiles", "shinyjs", "shinycssloaders", "rmarkdown", "tidytext",
                      "tidyverse", "pluralize", "data.table"))
 
 }
