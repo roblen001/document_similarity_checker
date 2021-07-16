@@ -102,7 +102,6 @@ backend <- function(input, output, session){
     filename = 'similarity-report.pdf',
 
     content = function(file) {
-      print(paste(getwd(), '/inst/www/ONDRI_full-logo_web.png', sep = ""))
       src <- normalizePath(paste(getwd(), '/R/report.rmd', sep = ""))
       # temporarily switch to the temp dir, in case you do not have write
       # permission to the current working directory
