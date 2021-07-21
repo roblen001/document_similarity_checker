@@ -16,7 +16,7 @@ checkWithKeywords <- function(filePath, input){
   data$text<- with(data, paste0(background, hypothesis, significance))
   corpus_raw <- data %>% dplyr::select('id', 'author', 'title', 'text', 'status')
   corpus_raw <- corpus_raw %>%
-    filter(status == "Approved")
+    filter(status == "1")
 
   # separating input into list of words
   input_word_list <- as.list(strsplit(input, ","))

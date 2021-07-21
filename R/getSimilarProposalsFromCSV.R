@@ -27,7 +27,7 @@ getSimilarProposalsFromCSV <- function(proposalDataFile='', idForFileBeingChecke
 
     if (type != 'SimilarityReport'){
       corpus_raw <- corpus_raw %>%
-        dplyr::filter(status == "Approved" | id == idForFileBeingChecked)
+        dplyr::filter(status == "1" | id == idForFileBeingChecked)
     }
     # assumes the checkUsing "backgroundinfo" was selected
     if (background_info != ''){
