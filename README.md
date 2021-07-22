@@ -12,19 +12,19 @@ Additional information, documentation, and guides coming soon.
 
 <br>
 
-I am currently dealing with a working directory issue to produce similarity reports. To solve the issue for now, you will need to download the zip file for the project.
+* I am currently dealing with a working directory issue to produce similarity reports. To solve the issue for now, you will need to download the zip file for the project.
 
 <img src='etc/download_zip.png'>
 
 <br>
 
-Extract the folder by clicking the extract all button.
+* Extract the folder by clicking the extract all button.
 
 <img src='etc/extract-all.png'>
 
 <br>
 
-Then open the project by clicking the ProposalSimilarityChecker.Rproj and running the next lines in opened the terminal within Rstudio.
+* Then open the project by clicking the ProposalSimilarityChecker.Rproj and running the next lines in opened the terminal within Rstudio.
 
 <img src='etc/ProposalSimilarityChecker.png'>
 
