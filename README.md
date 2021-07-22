@@ -6,6 +6,30 @@ A shiny app for checking similarities between proposals.
 
 Additional information, documentation, and guides coming soon.
 
+<hr>
+
+* Install [R](https://cran.r-project.org/) first and then [RStudio](https://rstudio.com/products/rstudio/download/). Please choose the correct installer carefully as it will depend on your computer's operating system.
+
+<br>
+
+I am currently dealing with a working directory issue to produce similarity reports. To solve the issue for now, you will need to download the zip file for the project.
+
+<img src='etc/download_zip.png'>
+
+<br>
+
+Extract the folder by clicking the extract all button.
+
+<img src='etc/extract-all.png'>
+
+<br>
+
+Then open the project by clicking the ProposalSimilarityChecker.Rproj and running the next lines in opened the terminal within Rstudio.
+
+<img src='etc/ProposalSimilarityChecker.png'>
+
+<br> 
+
 * Download and install the shiny app directly with the following lines of code:
 ```
   if (!require("devtools")){
@@ -28,3 +52,5 @@ If you get the following message in your RStudio console, please type 3.
 <br>
 
 * When installation is complete, type ```ProposalSimilarityChecker::runApp()``` to open the app.
+
+<br>
