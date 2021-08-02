@@ -93,12 +93,9 @@ backend <- function(input, output, session){
         proposal_df_path =  shinyFiles::parseFilePaths(volumes, input$DataframeProposalFile)
         similar_articles_df(getSimilarProposalsFromCSV(proposalDataFile = proposal_df_path$datapath,
                                    type = 'SimilarityReport'))
-        print(similar_articles_df()[order(-similar_articles_df()$common_words_weighted),])
-
       }
       load_data()
   })
-
 
   output$downloadReport <- downloadHandler(
     filename = 'similarity-report.pdf',

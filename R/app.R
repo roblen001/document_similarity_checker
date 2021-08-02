@@ -11,6 +11,7 @@
 
 
 runApp <- function(options = list()){
+
   shiny::addResourcePath("www", system.file("www", package = "ProposalSimilarityChecker"))
   library(tidyverse)
   ui <- shiny::fluidPage(
@@ -34,12 +35,12 @@ runApp <- function(options = list()){
 
   }
 
-    shiny::shinyApp(ui = ui,
-                    server = server,
-                    options = options)
+    # shiny::shinyApp(ui = ui,
+    #                 server = server,
+    #                 options = options)
 
-    # # Run the application.
-    # shiny::shinyApp(ui, server, options = list(display.mode = "normal", launch.browser = TRUE))
+    # Run the application.
+    shiny::shinyApp(ui, server, options = list(display.mode = "normal", launch.browser = TRUE))
 }
 
 

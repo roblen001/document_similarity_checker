@@ -42,7 +42,6 @@ geometry: margin=2.54cm
 
 ```{r, include=FALSE}
 # copy the logo to the current directory
-print(report_path())
 file.copy(file.path(report_path()), '.')
 ```
 
