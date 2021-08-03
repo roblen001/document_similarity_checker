@@ -57,44 +57,51 @@ backend <- function(input, output, session){
 
   # submit button
   observeEvent(input$BeginCheck, {
-      # show loading screen
-      shinyjs::show("loading_page")
-      shinyjs::hide("main_content")
       proposal_df_path =  shinyFiles::parseFilePaths(volumes, input$DataframeProposalFile)
-      #  checking what the user has selected for CHECK USING
-      if (input$checkUsing == 'Keywords'){
-        # getting selected file name
-        similar_proposal <- checkWithKeywords(filePath = proposal_df_path$datapath, input = input$keywordsList)
-        proposalDF(similar_proposal)
-      }else if (input$checkUsing == 'ProposalId'){
-        # getting selected file name
-        similar_proposal <- getSimilarProposalsFromCSV(proposalDataFile = proposal_df_path$datapath,
-                                                       idForFileBeingChecked=input$proposalID)
-        commonKeyWords_OtherProposals(unlist(similar_proposal[4]))
-        amount_of_commonWords(similar_proposal$common_words_weighted)
-        # getting the title of the most similar proposal
-        corpus_raw <- read.csv(proposal_df_path$datapath)
-        colnames(corpus_raw) <- c('id', 'author', 'proposal_title', 'text')
-        title <- corpus_raw[corpus_raw$id == similar_proposal$most_similar_proposal ,]$proposal_title
-        proposalTitle(title)
-      } else if (input$checkUsing == "BackgroundInformation") {
-        # getting selected file name
-        similar_proposal <- getSimilarProposalsFromCSV(proposalDataFile = proposal_df_path$datapath,
-                                                       idForFileBeingChecked='TEMPORARYID16352',
-                                                       background_info=input$backgroundInformation)
-        commonKeyWords_OtherProposals(unlist(similar_proposal[4]))
-        amount_of_commonWords(similar_proposal$common_words_weighted)
-        # getting the title of the most similar proposal
-        corpus_raw <- read.csv(proposal_df_path$datapath)
-        colnames(corpus_raw) <- c('id', 'author', 'proposal_title', 'text')
-        title <- corpus_raw[corpus_raw$id == similar_proposal$most_similar_proposal ,]$proposal_title
-        proposalTitle(title)
-      } else if (input$checkUsing == "SimilarityReport"){
-        proposal_df_path =  shinyFiles::parseFilePaths(volumes, input$DataframeProposalFile)
-        similar_articles_df(getSimilarProposalsFromCSV(proposalDataFile = proposal_df_path$datapath,
-                                   type = 'SimilarityReport'))
+      # check that a csv file has been selected
+      if (identical(proposal_df_path$datapath, character(0))){
+        # warning pop up
+        shinyalert::shinyalert("Oops!", "Please make sure you have selected a proposal dataframe prior to starting the check.", type = "error")
+      }else{
+        # show loading screen
+        shinyjs::show("loading_page")
+        shinyjs::hide("main_content")
+        #  checking what the user has selected for CHECK USING
+        if (input$checkUsing == 'Keywords'){
+          # getting selected file name
+          similar_proposal <- checkWithKeywords(filePath = proposal_df_path$datapath, input = input$keywordsList)
+          proposalDF(similar_proposal)
+        }else if (input$checkUsing == 'ProposalId'){
+          # getting selected file name
+          similar_proposal <- getSimilarProposalsFromCSV(proposalDataFile = proposal_df_path$datapath,
+                                                         idForFileBeingChecked=input$proposalID)
+          commonKeyWords_OtherProposals(unlist(similar_proposal[4]))
+          amount_of_commonWords(similar_proposal$common_words_weighted)
+          # getting the title of the most similar proposal
+          corpus_raw <- read.csv(proposal_df_path$datapath)
+          colnames(corpus_raw) <- c('id', 'author', 'proposal_title', 'text')
+          title <- corpus_raw[corpus_raw$id == similar_proposal$most_similar_proposal ,]$proposal_title
+          proposalTitle(title)
+        } else if (input$checkUsing == "BackgroundInformation") {
+          # getting selected file name
+          similar_proposal <- getSimilarProposalsFromCSV(proposalDataFile = proposal_df_path$datapath,
+                                                         idForFileBeingChecked='TEMPORARYID16352',
+                                                         background_info=input$backgroundInformation)
+          commonKeyWords_OtherProposals(unlist(similar_proposal[4]))
+          amount_of_commonWords(similar_proposal$common_words_weighted)
+          # getting the title of the most similar proposal
+          corpus_raw <- read.csv(proposal_df_path$datapath)
+          colnames(corpus_raw) <- c('id', 'author', 'proposal_title', 'text')
+          title <- corpus_raw[corpus_raw$id == similar_proposal$most_similar_proposal ,]$proposal_title
+          proposalTitle(title)
+        } else if (input$checkUsing == "SimilarityReport"){
+          proposal_df_path =  shinyFiles::parseFilePaths(volumes, input$DataframeProposalFile)
+          similar_articles_df(getSimilarProposalsFromCSV(proposalDataFile = proposal_df_path$datapath,
+                                                         type = 'SimilarityReport'))
+          print(similar_articles_df())
+        }
+        load_data()
       }
-      load_data()
   })
 
   output$downloadReport <- downloadHandler(
@@ -135,7 +142,7 @@ backend <- function(input, output, session){
 
   # renders similaritt report dynamically
   output$similarityReportPreview <- renderUI({
-    HTML(getHTML_simalarityReportPreview(similar_articles_df()))
+    HTML(getHTML_similarityReportPreview(similar_articles_df()))
   })
 
   # renders similarity level dynamically

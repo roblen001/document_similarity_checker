@@ -1,4 +1,4 @@
-# getHTML_simalarityReportPreview.R
+# getHTML_similarityReportPreview.R
 #
 # Purpose: Dynamically renders list of similar proposals that will be in the
 #  report
@@ -9,7 +9,7 @@
 #
 # ========================================================================================
 
-getHTML_simalarityReportPreview <- function (df) {
+getHTML_similarityReportPreview <- function (df) {
   df <- df[order(-df$common_words_weighted),]
   innerHTML <- '<div>'
   for (i in 1:nrow(df)) {
@@ -21,22 +21,23 @@ getHTML_simalarityReportPreview <- function (df) {
     content3 <- paste('<p>Similar Proposal Title:', paste(df[i,]$most_similar_proposal_title, '</p>'))
     count_common_words <- paste('<p>Number of Common Words:', paste(df[i,]$common_words_weighted,'</p>'))
     if (length(df$common_words_weighted[i]) == 0) {
-      similarity_index <- paste("Similarity Indicator:","NOT SIMILAR", "\n")
+      similarity_index <- paste("<p>Similarity Indicator:","NOT SIMILAR</p>")
     }
     else if (df$common_words_weighted[i] >= 1 & df$common_words_weighted[i] < 6) {
-      similarity_index <- paste("Similarity Indicator:","NOT VERY SIMILAR", "\n")
+      similarity_index <- paste("<p>Similarity Indicator:","NOT VERY SIMILAR</p>")
     }
     else if (df$common_words_weighted[i] >= 6 & df$common_words_weighted[i] < 10) {
-      similarity_index <- paste("Similarity Indicator:","SOME SIMILARITY", "\n")
+      similarity_index <- paste("<p>Similarity Indicator:","SOME SIMILARITY</p>")
     } else if (df$common_words_weighted[i] >= 10) {
-      similarity_index <- paste("Similarity Indicator:","SIMILAR", "\n")
+      similarity_index <- paste("<p>Similarity Indicator:","SIMILAR</p>")
     }
-    similar_proposal_author <- paste('<p>Proposal Title: ', paste(df[i,]$author_of_most_similar_proposal, '</p>'))
-    common_words <- paste('<p>Common Words List: ', paste(sub(',', '', df[i,]$common_words), '</p>'))
+    similar_proposal_author <- paste('<p>Author of Similar Proposal: ', paste(df[i,]$author_of_most_similar_proposal, '</p>'))
+    common_words <- paste("<p>Common Words List:", paste(unlist(df$common_words_list[i]), collapse=', '), '</p>')
     # content2 <- paste(count_common_words, common_words)
 
-    contentList <- c(content1, count_common_words, content3, similarity_index,
-                     common_words, similar_proposal_author)
+    contentList <- c(content1, count_common_words, content3, similarity_index, similar_proposal_author,
+                     common_words)
+
     content <- paste(contentList, collapse="")
 
     container <- paste(container, paste(content, '</div>'))

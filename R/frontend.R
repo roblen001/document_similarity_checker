@@ -19,6 +19,7 @@ options(spinner.color="#0275D8", spinner.color.background="#ffffff", spinner.siz
 
 frontend <- function(){
   shiny::fluidPage(
+    shinyalert::useShinyalert(),
     shinyjs::useShinyjs(),
     shiny::tags$h2('Selection Section'),
     # Sidebar panel for inputs
