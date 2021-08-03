@@ -133,6 +133,11 @@ backend <- function(input, output, session){
     }
   })
 
+  # renders similaritt report dynamically
+  output$similarityReportPreview <- renderUI({
+    HTML(getHTML_simalarityReportPreview(similar_articles_df()))
+  })
+
   # renders similarity level dynamically
   output$similarityLevel <- renderUI({
     HTML(getHTML_Similarity_indicator_otherproposal(amount_of_commonWords()))

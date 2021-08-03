@@ -137,8 +137,15 @@ frontend <- function(){
                    shiny::conditionalPanel(condition = "input.checkUsing == 'SimilarityReport'",
                                            shiny::tags$div(style='height: 50vh; display: flex; justify-content: center; align-items: center;
                                                            display: flex; flex-direction: column',
-                                                           shiny::p('Data has been compiled you can now download the pdf file'),
-                                                           shiny::downloadButton('downloadReport')
+                                                           # shiny::p('Data has been compiled you can now download the pdf file'),
+                                                           shiny::tags$div(style = "display: flex; flex-direction: row; justify-content: space-evenly; align-items: center;
+                                                                           width: 100%;",
+                                                                           shiny::tags$h3("Preview Of Simlarity Report"),
+                                                                           shiny::downloadButton('downloadReport'),
+                                                                           ),
+                                                           shiny::tags$div(style='height: 50vh; border: 1px solid grey; overflow: scroll; background-color: white;',
+                                                                           shiny::uiOutput('similarityReportPreview')
+                                                           )
 
                                               )
                              ),
@@ -147,7 +154,6 @@ frontend <- function(){
                                            shiny::tags$div(style='height: 100%;',
                                                            shiny::p('Proposal Title:'),
                                                            shiny::uiOutput("proposalTitle"),
-
                                                            shiny::p('Similarity Level:'),
                                                            shiny::uiOutput('similarityLevel'),
 
