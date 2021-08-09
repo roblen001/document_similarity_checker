@@ -63,15 +63,45 @@ backend <- function(input, output, session){
         # warning pop up
         shinyalert::shinyalert("Oops!", "Please make sure you have selected a proposal dataframe prior to starting the check.", type = "error")
       }else{
-        # show loading screen
-        shinyjs::show("loading_page")
-        shinyjs::hide("main_content")
         #  checking what the user has selected for CHECK USING
         if (input$checkUsing == 'Keywords'){
-          # getting selected file name
-          similar_proposal <- checkWithKeywords(filePath = proposal_df_path$datapath, input = input$keywordsList)
-          proposalDF(similar_proposal)
+          # make sure the input keyword list is not empty
+          input_word_list <- as.list(strsplit(input$keywordsList, ","))
+          if (identical(input_word_list[[1]], character(0))){
+            shinyalert::shinyalert("Oops!", "Please make sure you have at least one word in the keyword input.", type = "error")
+          } else {
+          # keep track of words to make sure there are no duplicates
+          input_word_list <- as.list(strsplit(input$keywordsList, ","))
+          words <- c()
+          for (word in input_word_list) {
+            # separating input into list of words
+            word <- trimws(word, which = "both")
+            word <- tolower(word)
+            words <- c(words, word)
+            # TODO: make this automatic instead of having a pop up
+            duplication <- duplicated(words)
+            if (TRUE %in% duplication){
+              shinyalert::shinyalert("Oops!", "Please make sure you do not have any duplicates in the keyword input.", type = "error")
+            } else{
+              # show loading screen
+              shinyjs::show("loading_page")
+              shinyjs::hide("main_content")
+
+              # getting selected file name
+              similar_proposal <- checkWithKeywords(filePath = proposal_df_path$datapath, input = input$keywordsList)
+              proposalDF(similar_proposal)
+
+              load_data()
+
+            }
+          }
+          }
+
         }else if (input$checkUsing == 'ProposalId'){
+          # show loading screen
+          shinyjs::show("loading_page")
+          shinyjs::hide("main_content")
+
           # getting selected file name
           similar_proposal <- getSimilarProposalsFromCSV(proposalDataFile = proposal_df_path$datapath,
                                                          idForFileBeingChecked=input$proposalID)
@@ -82,7 +112,13 @@ backend <- function(input, output, session){
           colnames(corpus_raw) <- c('id', 'author', 'proposal_title', 'text')
           title <- corpus_raw[corpus_raw$id == similar_proposal$most_similar_proposal ,]$proposal_title
           proposalTitle(title)
+
+          load_data()
         } else if (input$checkUsing == "BackgroundInformation") {
+          # show loading screen
+          shinyjs::show("loading_page")
+          shinyjs::hide("main_content")
+
           # getting selected file name
           similar_proposal <- getSimilarProposalsFromCSV(proposalDataFile = proposal_df_path$datapath,
                                                          idForFileBeingChecked='TEMPORARYID16352',
@@ -94,13 +130,19 @@ backend <- function(input, output, session){
           colnames(corpus_raw) <- c('id', 'author', 'proposal_title', 'text')
           title <- corpus_raw[corpus_raw$id == similar_proposal$most_similar_proposal ,]$proposal_title
           proposalTitle(title)
+
+          load_data()
         } else if (input$checkUsing == "SimilarityReport"){
+          # show loading screen
+          shinyjs::show("loading_page")
+          shinyjs::hide("main_content")
+
           proposal_df_path =  shinyFiles::parseFilePaths(volumes, input$DataframeProposalFile)
           similar_articles_df(getSimilarProposalsFromCSV(proposalDataFile = proposal_df_path$datapath,
                                                          type = 'SimilarityReport'))
-          print(similar_articles_df())
+          load_data()
+
         }
-        load_data()
       }
   })
 
