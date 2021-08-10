@@ -24,7 +24,7 @@ Additional information, documentation, and guides coming soon.
 
 <br>
 
-* Then open the project by clicking the ProposalSimilarityChecker.Rproj and running the next lines in the opened terminal within Rstudio.
+* Then open the project by clicking the ProposalSimilarityChecker.Rproj and running the next lines in the opened console within Rstudio.
 
 <img src='etc/ProposalSimilarityChecker.png'>
 
