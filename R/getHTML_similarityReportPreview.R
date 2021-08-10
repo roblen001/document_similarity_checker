@@ -19,7 +19,7 @@ getHTML_similarityReportPreview <- function (df) {
     author <- paste('<p>Author: ', paste(df[i,]$author_of_proposal_title, '</p>'))
     content1 <- paste(title, author)
     content3 <- paste('<p>Similar Proposal Title:', paste(df[i,]$most_similar_proposal_title, '</p>'))
-    count_common_words <- paste('<p>Number of Common Words:', paste(df[i,]$common_words_weighted,'</p>'))
+    count_common_words <- paste('<p>Number of Common Words:', paste(length(unlist(df[i,]$common_words_list)),'</p>'))
     if (length(df$common_words_weighted[i]) == 0) {
       similarity_index <- paste("<p>Similarity Indicator:","NOT SIMILAR</p>")
     }
@@ -32,7 +32,7 @@ getHTML_similarityReportPreview <- function (df) {
       similarity_index <- paste("<p>Similarity Indicator:","SIMILAR</p>")
     }
     similar_proposal_author <- paste('<p>Author of Similar Proposal: ', paste(df[i,]$author_of_most_similar_proposal, '</p>'))
-    common_words <- paste("<p>Common Words List:", paste(unlist(df$common_words_list[i]), collapse=', '), '</p>')
+    common_words <- paste("<p>Common Words List:", paste(unlist(df[i,]$common_words_list), collapse=', '), '</p>')
     # content2 <- paste(count_common_words, common_words)
 
     contentList <- c(content1, count_common_words, content3, similarity_index, similar_proposal_author,

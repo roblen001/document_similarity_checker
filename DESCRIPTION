@@ -2,10 +2,6 @@ Package: ProposalSimilarityChecker
 Type: Package
 Title: ONDRI Proposal Similarity Checker ShinyApp
 Version: 0.1.0
-Authors@R:c(person(given = "Derek",
-           family = "Beaton",
-           role = c("aut", "cre"),
-           email = "dbeaton@research.baycrest.org"))
 Description: A shiny app for checking the similarity between proposals.
 License: GPL-3
 Encoding: UTF-8

@@ -60,7 +60,7 @@ for (i in 1:length(data$proposal_title)){
    cat("Similar Proposal Title:", data$most_similar_proposal_title[i], "\n")
    cat('\n') 
    cat('\n')
-   cat("Number of Common Words:", data$common_words_weighted[i], "\n")
+   cat("Number of Common Words:", length(unlist(data$common_words_list[i])), "\n")
    cat('\n')
    if (length(data$common_words_weighted[i]) == 0) {
       cat('\n')

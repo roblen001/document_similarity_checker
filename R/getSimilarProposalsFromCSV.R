@@ -81,7 +81,9 @@ getSimilarProposalsFromCSV <- function(proposalDataFile='', idForFileBeingChecke
                              "author_of_proposal_title", "proposal_title",
                              "author_of_most_similar_proposal", "most_similar_proposal_title")
     }else{
-      results <- similar_articles_with_common_word_lst %>% dplyr::filter(proposal_title == idForFileBeingChecked)
+      # check if the id exists in the dataframe
+      print(colnames(corpus_raw))
+        results <- similar_articles_with_common_word_lst %>% dplyr::filter(proposal_title == idForFileBeingChecked)
     }
 
     return(results)

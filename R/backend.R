@@ -98,22 +98,32 @@ backend <- function(input, output, session){
           }
 
         }else if (input$checkUsing == 'ProposalId'){
-          # show loading screen
-          shinyjs::show("loading_page")
-          shinyjs::hide("main_content")
+          corpus_raw <- readr::read_csv(proposal_df_path$datapath)
+          # the inputed dataframe should always have the same ordering ID, Author, Title, Background information
+          colnames(corpus_raw) <- c('id', 'author', 'proposal_title', 'background', 'hypothesis', 'variables', 'analysis', 'significance',
+                                    'Keyword 1', 'Keyword 2', 'Keyword 3', 'Keyword 4', 'Keyword 5', 'status')
+          # check if the id exists in the dataframe
+          if (input$proposalID %in% corpus_raw$id){
+            # show loading screen
+            shinyjs::show("loading_page")
+            shinyjs::hide("main_content")
 
-          # getting selected file name
-          similar_proposal <- getSimilarProposalsFromCSV(proposalDataFile = proposal_df_path$datapath,
-                                                         idForFileBeingChecked=input$proposalID)
-          commonKeyWords_OtherProposals(unlist(similar_proposal[4]))
-          amount_of_commonWords(similar_proposal$common_words_weighted)
-          # getting the title of the most similar proposal
-          corpus_raw <- read.csv(proposal_df_path$datapath)
-          colnames(corpus_raw) <- c('id', 'author', 'proposal_title', 'text')
-          title <- corpus_raw[corpus_raw$id == similar_proposal$most_similar_proposal ,]$proposal_title
-          proposalTitle(title)
+            # getting selected file name
+            similar_proposal <- getSimilarProposalsFromCSV(proposalDataFile = proposal_df_path$datapath,
+                                                           idForFileBeingChecked=input$proposalID)
+            commonKeyWords_OtherProposals(unlist(similar_proposal[4]))
+            amount_of_commonWords(similar_proposal$common_words_weighted)
+            # getting the title of the most similar proposal
+            corpus_raw <- read.csv(proposal_df_path$datapath)
+            colnames(corpus_raw) <- c('id', 'author', 'proposal_title', 'text')
+            title <- corpus_raw[corpus_raw$id == similar_proposal$most_similar_proposal ,]$proposal_title
+            proposalTitle(title)
 
-          load_data()
+            load_data()
+
+            }else{
+            shinyalert::shinyalert("Oops!", "Please make sure the id exists in the proposal dataframe.", type = "error")
+          }
         } else if (input$checkUsing == "BackgroundInformation") {
           # show loading screen
           shinyjs::show("loading_page")
@@ -182,7 +192,7 @@ backend <- function(input, output, session){
     }
   })
 
-  # renders similaritt report dynamically
+  # renders similarity report dynamically
   output$similarityReportPreview <- renderUI({
     HTML(getHTML_similarityReportPreview(similar_articles_df()))
   })
