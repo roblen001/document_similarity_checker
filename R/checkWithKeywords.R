@@ -23,7 +23,17 @@ checkWithKeywords <- function(filePath, input){
   # TODO: this is a temporary fix to the bug which occurs if only one
   # one word is inputted
   input_word_list <- c(input_word_list, "ANSI3456DFBEEU1")
+  # add pluralized and apostrophe to words
+  new_input_word_lst <- c()
   for (word in input_word_list) {
+    word <- trimws(word, which = "both")
+    pluralize <- paste(word, "s", sep = "")
+    apostrophe <- paste(word, "'s", sep = "")
+    new_input_word_lst <- c(new_input_word_lst, word, pluralize, apostrophe)
+  }
+  new_input_word_lst <- unique(new_input_word_lst)
+  print(new_input_word_lst)
+  for (word in new_input_word_lst) {
     word <- trimws(word, which = "both")
     # adding white space to make sure it finds individual word and not substring
     word <- paste("", paste(word, ""))
@@ -32,6 +42,7 @@ checkWithKeywords <- function(filePath, input){
     corpus_raw$text <- paste(' ', corpus_raw$text)
     found <- sapply(tolower(word), grepl, tolower(corpus_raw$text))
     corpus_raw <- cbind(corpus_raw,found)
+    print(corpus_raw$found)
   }
   # counting the amount of common keywords found in each proposal
   corpus_clean <- subset(corpus_raw, select = -c(id, text, title, author, status) )
@@ -55,7 +66,7 @@ checkWithKeywords <- function(filePath, input){
     common_words <- c()
     for (row in final_results$text) {
       str_commonWords <- ''
-      for (word in input_word_list[[1]]) {
+      for (word in new_input_word_lst) {
         word <- trimws(word, which = "both")
         # adding white space to make sure it finds individual word and not substring
         word <- paste("", paste(word, ""))
@@ -66,8 +77,29 @@ checkWithKeywords <- function(filePath, input){
       common_words <- c(common_words, str_commonWords)
     }
 
+
+    # # ============== IN DEV MODE ===========================
+    # # clean the results
+    # # TODO: this needs to be optimized and done earlier in the function
+    # for (i in length(final_results$common_words)) {
+    #   for (word in input_word_list) {
+    #     pluralize <- paste(word, "s", sep = "")
+    #     apostrophe <- paste(word, "'s", sep = "")
+    #     if (grepl(tolower(word), final_results$common_words[i], fixed = TRUE) |
+    #         grepl(tolower(pluralize), final_results$common_words[i], fixed = TRUE)|
+    #         grepl(tolower(apostrophe), final_results$common_words[i], fixed = TRUE)){
+    #       final_results$common_words[i] <- word
+    #     }
+    #   }
+    # }
+    #
+    # # =============== IN DEV MODE ===========================
+
+
     final_results$common_words <- common_words
   }
 
   return(final_results)
 }
+
+

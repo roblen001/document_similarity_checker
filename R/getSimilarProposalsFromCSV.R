@@ -32,6 +32,7 @@ getSimilarProposalsFromCSV <- function(proposalDataFile='', idForFileBeingChecke
     # assumes the checkUsing "backgroundinfo" was selected
     if (background_info != ''){
       corpus_raw <- corpus_raw %>% dplyr::select(-status)
+      # not entirely sure what this placeholder is for, I assume it stops and error
       df <- data.frame("TEMPORARYID16352","TEMPORARYAUTHOR16352", "TEMPORARYTITLE16352", background_info)
       names(df) <- c('id', 'author', 'proposal_title', 'text')
       corpus_raw <- rbind(corpus_raw, df)
