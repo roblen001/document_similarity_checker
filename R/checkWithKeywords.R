@@ -29,7 +29,10 @@ checkWithKeywords <- function(filePath, input){
     word <- trimws(word, which = "both")
     pluralize <- paste(word, "s", sep = "")
     apostrophe <- paste(word, "'s", sep = "")
-    new_input_word_lst <- c(new_input_word_lst, word, pluralize, apostrophe)
+    singularize <- substr(word,1,nchar(word)-1)
+    remove_apastrophe <- substr(word,1,nchar(word)-2)
+    new_input_word_lst <- c(new_input_word_lst, word, pluralize, apostrophe,
+                            singularize, remove_apastrophe)
   }
   new_input_word_lst <- unique(new_input_word_lst)
   print(new_input_word_lst)
@@ -79,6 +82,8 @@ checkWithKeywords <- function(filePath, input){
 
 
     # # ============== IN DEV MODE ===========================
+    # Trying to make the different word count as only the inputted word and
+    # not the variation we are also looking for
     # # clean the results
     # # TODO: this needs to be optimized and done earlier in the function
     # for (i in length(final_results$common_words)) {
