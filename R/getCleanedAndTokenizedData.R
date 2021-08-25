@@ -10,6 +10,8 @@
 #
 # ========================================================================================
 
+# TODO: can type be removed from this function???
+
 getCleanedAndTokenizedData <- function(corpus_raw ,custom_bigram_stop_words, custom_stop_words, type) {
     # Unsure how to import the stop_words data without library()
     library(tidytext)

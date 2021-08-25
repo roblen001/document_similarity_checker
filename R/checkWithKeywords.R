@@ -80,27 +80,6 @@ checkWithKeywords <- function(filePath, input){
       common_words <- c(common_words, str_commonWords)
     }
 
-
-    # # ============== IN DEV MODE ===========================
-    # Trying to make the different word count as only the inputted word and
-    # not the variation we are also looking for
-    # # clean the results
-    # # TODO: this needs to be optimized and done earlier in the function
-    # for (i in length(final_results$common_words)) {
-    #   for (word in input_word_list) {
-    #     pluralize <- paste(word, "s", sep = "")
-    #     apostrophe <- paste(word, "'s", sep = "")
-    #     if (grepl(tolower(word), final_results$common_words[i], fixed = TRUE) |
-    #         grepl(tolower(pluralize), final_results$common_words[i], fixed = TRUE)|
-    #         grepl(tolower(apostrophe), final_results$common_words[i], fixed = TRUE)){
-    #       final_results$common_words[i] <- word
-    #     }
-    #   }
-    # }
-    #
-    # # =============== IN DEV MODE ===========================
-
-
     final_results$common_words <- common_words
   }
 
