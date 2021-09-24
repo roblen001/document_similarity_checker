@@ -13,7 +13,8 @@ installPackages <- function(){
   }
 
   utils::install.packages(c("shiny","shinyFiles", "shinyjs", "shinycssloaders", "rmarkdown", "tidytext",
-                     "tidyverse", "pluralize", "data.table", "dplyr", "tidyr", "tibble", "utils", "fs", "readr", "shinyalert"))
+                     "tidyverse", "pluralize", "data.table", "dplyr", "tidyr",
+                     "tibble", "utils", "fs", "readr", "shinyalert"))
 
 }
 
