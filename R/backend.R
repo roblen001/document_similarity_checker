@@ -186,8 +186,10 @@ backend <- function(input, output, session){
     filename = 'similarity-report.pdf',
 
     content = function(file) {
-      print(input$DownloadLocationReport)
-      src <- normalizePath(paste(input$DownloadLocationReport, '/R/report.rmd', sep = ""))
+      download_path =  shinyFiles::parseFilePaths(volumes, input$DownloadLocationReport)
+      print(getwd())
+      print(download_path)
+      src <- normalizePath(paste(download_path, '/R/report.rmd', sep = ""))
       # # temporarily switch to the temp dir, in case you do not have write
       # # permission to the current working directory
       owd <- setwd(tempdir())
