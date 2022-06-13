@@ -55,6 +55,15 @@ frontend <- function(){
 
             shiny::verbatimTextOutput("DataframeProposalFileOutput", placeholder = TRUE),
 
+            shinyFiles::shinyFilesButton(id = "DownloadLocationReport",
+                                         label = 'Click to select a location to download report',
+                                         title = 'Please select a location to download report',
+                                         multiple = FALSE,
+                                         icon = shiny::icon("file")
+            ),
+
+            shiny::verbatimTextOutput("DataframeProposalFileOutput", placeholder = TRUE),
+
             shiny::br(),
             shiny::conditionalPanel(condition = "input.checkUsing == 'ProposalId'",
                              # Text input where users put the id of the proposal to compare
