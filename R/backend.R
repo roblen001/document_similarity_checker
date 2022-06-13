@@ -185,14 +185,15 @@ backend <- function(input, output, session){
   output$downloadReport <- downloadHandler(
     filename = 'similarity-report.pdf',
     content = function(file) {
-      print(getwd())
-      print(dirname(sys.frame(1)$ofile))
-      src <- normalizePath(paste(download_path, '/app/shiny/R/report.rmd', sep = ""))
-      # # temporarily switch to the temp dir, in case you do not have write
-      # # permission to the current working directory
-      owd <- setwd(tempdir())
-      on.exit(setwd(owd))
-      file.copy(src, 'report.Rmd', overwrite = TRUE)
+      # print(getwd())
+      # print(dirname(sys.frame(1)$ofile))
+      # src <- normalizePath(paste(download_path, '/app/shiny/R/report.rmd', sep = ""))
+      # # # temporarily switch to the temp dir, in case you do not have write
+      # # # permission to the current working directory
+      # owd <- setwd(tempdir())
+      # on.exit(setwd(owd))
+      file.copy(paste0(tempfile(), ".pdf"), 'report.Rmd', overwrite = TRUE)
+      # file.copy(src, 'report.Rmd', overwrite = TRUE)
       #
       out <- rmarkdown::render('report.Rmd', rmarkdown::pdf_document())
       file.rename(out, file)
