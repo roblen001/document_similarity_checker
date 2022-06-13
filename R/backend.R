@@ -185,20 +185,8 @@ backend <- function(input, output, session){
   output$downloadReport <- downloadHandler(
     filename = 'similarity-report.pdf',
     content = function(file) {
-      print('whatever this shit is')
-      fi <- tempfile()
-      writeLines("f()", fi)
-      f <- function() print(sys.frame(-4)$srcfile)
-      source(fi)
-      print(fi)
-      print('Script Path')
-      library('here')
-      print(here::here())
-      print('working dir')
       print(getwd())
-      print('current script')
-      print(rstudioapi::getSourceEditorContext()$path)
-      download_path =  shinyFiles::parseDirPath(volumes, input$DownloadLocationReport)
+      print(dirname(sys.frame(1)$ofile))
       src <- normalizePath(paste(download_path, '/app/shiny/R/report.rmd', sep = ""))
       # # temporarily switch to the temp dir, in case you do not have write
       # # permission to the current working directory
