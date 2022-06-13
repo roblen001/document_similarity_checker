@@ -158,18 +158,24 @@ backend <- function(input, output, session){
 
   output$downloadReport <- downloadHandler(
     filename = 'similarity-report.pdf',
-
     content = function(file) {
-      src <- normalizePath(paste(getwd(), '/R/report.rmd', sep = ""))
-      # temporarily switch to the temp dir, in case you do not have write
-      # permission to the current working directory
-      owd <- setwd(tempdir())
-      on.exit(setwd(owd))
-      file.copy(src, 'report.Rmd', overwrite = TRUE)
-
-      out <- rmarkdown::render('report.Rmd', rmarkdown::pdf_document())
-      file.rename(out, file)
+      rmarkdown::render('report.Rmd', rmarkdown::pdf_document())
     }
+    # filename = 'similarity-report.pdf',
+    #
+    # content = function(file) {
+    #   print("Working Directory:")
+    #   print(getwd())
+    #   src <- normalizePath(paste(getwd(), '/R/report.rmd', sep = ""))
+    #   # temporarily switch to the temp dir, in case you do not have write
+    #   # permission to the current working directory
+    #   owd <- setwd(tempdir())
+    #   on.exit(setwd(owd))
+    #   file.copy(src, 'report.Rmd', overwrite = TRUE)
+    #
+    #   out <- rmarkdown::render('report.Rmd', rmarkdown::pdf_document())
+    #   file.rename(out, file)
+    # }
   )
 
   # renders common keywords

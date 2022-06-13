@@ -35,7 +35,6 @@ checkWithKeywords <- function(filePath, input){
                             singularize, remove_apastrophe)
   }
   new_input_word_lst <- unique(new_input_word_lst)
-  print(new_input_word_lst)
   for (word in new_input_word_lst) {
     word <- trimws(word, which = "both")
     # adding white space to make sure it finds individual word and not substring
@@ -45,7 +44,6 @@ checkWithKeywords <- function(filePath, input){
     corpus_raw$text <- paste(' ', corpus_raw$text)
     found <- sapply(tolower(word), grepl, tolower(corpus_raw$text))
     corpus_raw <- cbind(corpus_raw,found)
-    print(corpus_raw$found)
   }
   # counting the amount of common keywords found in each proposal
   corpus_clean <- subset(corpus_raw, select = -c(id, text, title, author, status) )
@@ -54,7 +52,7 @@ checkWithKeywords <- function(filePath, input){
   if (typeof(corpus_raw$amount_of_commonWords) != 'list'){
     final_results <- "NO WORDS IN COMMON"
   }else{
-    corpus_raw <- corpus_raw %>% tidyr::unnest_auto(amount_of_commonWords) %>% unnest(cols = c(`FALSE`, `TRUE`))
+    corpus_raw <- corpus_raw %>% tidyr::unnest_auto(amount_of_commonWords) %>% tidyr::unnest(cols = c(`FALSE`, `TRUE`))
     corpus_raw[is.na(corpus_raw)] <- 0
     colnames(corpus_raw)[length(corpus_raw)] <- 'amount_of_wordsCommon'
     results <- corpus_raw[order(corpus_raw$amount_of_wordsCommon, decreasing = TRUE),]
