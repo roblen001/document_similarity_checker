@@ -161,8 +161,6 @@ backend <- function(input, output, session){
     # content = function(file) {
     #   rmarkdown::render('report.Rmd', rmarkdown::pdf_document())
     # }
-    filename = 'similarity-report.pdf',
-
     content = function(file) {
       print("Working Directory:")
       print(getwd())
