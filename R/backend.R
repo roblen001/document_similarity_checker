@@ -187,7 +187,7 @@ backend <- function(input, output, session){
     content = function(file) {
       # print(getwd())
       # print(dirname(sys.frame(1)$ofile))
-      src <- normalizePath(paste(system.file("rmd", "report.Rmd", package = "ProposalSimilarityChecker"))
+      src <- normalizePath(system.file("rmd", "report.Rmd", package = "ProposalSimilarityChecker"))
       # # # temporarily switch to the temp dir, in case you do not have write
       # # # permission to the current working directory
       owd <- setwd(tempdir())
@@ -195,7 +195,7 @@ backend <- function(input, output, session){
       # file.copy(paste0(tempfile(), ".pdf"), file, overwrite = TRUE)
       file.copy(src, 'report.Rmd', overwrite = TRUE)
 
-      out <- rmarkdown::render(system.file("rmd", "report.Rmd", package = "ProposalSimilarityChecker"),
+      out <- rmarkdown::render(src,
                                rmarkdown::pdf_document())
       file.rename(out, file)
     }
