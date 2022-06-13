@@ -33,7 +33,7 @@ backend <- function(input, output, session){
   shinyFiles::shinyFileChoose(input, id = "DataframeProposalFile", roots = volumes, filetypes = c("csv"))
   output$DataframeProposalFileOutput <- shiny::renderText("No proposal dataframe file selected.")
 
-  shinyFiles::shinyDirChoose(input, id = "DownloadLocationReport", roots = volumes, filetypes = c("csv"))
+  shinyFiles::shinyDirChoose(input, id = "DownloadLocationReport", roots = volumes)
   output$DownloadLocationReportFile <- shiny::renderText("No location to download report selected.")
 
   #  FOR OTHER PROPOSAL SELECTION INPUT TYPE
@@ -41,14 +41,20 @@ backend <- function(input, output, session){
   observeEvent(
     input$DataframeProposalFile, {
       proposalDFPath <- shinyFiles::parseDirPath(volumes, input$DataframeProposalFile)
+      downloadPath <- shinyFiles::parseDirPath(volumes, input$DownloadLocationReport)
 
       # Reset output when selection of directory is canceled.
       output$DataframeProposalFileOutput <- shiny::renderText("No file selected.")
+
+      output$DownloadLocationReport <- shiny::renderText("No location to download report selected.")
 
       # Otherwise if directory has been selected, print path of directory to screen.
       if (length(proposalDFPath) > 0){
         # Update output by printing new directory path.
         output$DataframeProposalFileOutput <- shiny::renderPrint(proposalDFPath)
+
+        output$DownloadLocationReportFile <- shiny::renderPrint(downloadPath)
+
       }
     }
   )
