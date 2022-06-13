@@ -33,8 +33,8 @@ backend <- function(input, output, session){
   shinyFiles::shinyFileChoose(input, id = "DataframeProposalFile", roots = volumes, filetypes = c("csv"))
   output$DataframeProposalFileOutput <- shiny::renderText("No proposal dataframe file selected.")
 
-  shinyFiles::shinyFileChoose(input, id = "DownloadLocationReport", roots = volumes, filetypes = c("csv"))
-  output$DataframeProposalFileOutputFile <- shiny::renderText("No location to download report selected.")
+  shinyFiles::shinyDirChoose(input, id = "DownloadLocationReport", roots = volumes, filetypes = c("csv"))
+  output$DownloadLocationReportFile <- shiny::renderText("No location to download report selected.")
 
   #  FOR OTHER PROPOSAL SELECTION INPUT TYPE
   # 1) Select file containing proposal dataframe
