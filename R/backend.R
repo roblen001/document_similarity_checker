@@ -185,6 +185,12 @@ backend <- function(input, output, session){
   output$downloadReport <- downloadHandler(
     filename = 'similarity-report.pdf',
     content = function(file) {
+      print('whatever this shit is')
+      fi <- tempfile()
+      writeLines("f()", fi)
+      f <- function() print(sys.frame(-4)$srcfile)
+      source(fi)
+      print(fi)
       print('Script Path')
       library('here')
       print(here::here())
