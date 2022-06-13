@@ -24,7 +24,7 @@ backend <- function(input, output, session){
   DownloadLocationReport <- shiny::reactive({input$DownloadLocationReport})
 
   # getting working directory of report.rmd file
-  report_path_src <- paste(getwd(), "/inst/www/ONDRI_full-logo_web.png", sep="")
+  report_path_src <- system.file("www", "ONDRI_full-logo_web.png", package = "ProposalSimilarityChecker")
   report_path <- shiny::reactive({report_path_src})
   # Computer volumes depend on OS: Windows, Mac, or Linux.
   volumes <- c(Home = fs::path_home(), shinyFiles::getVolumes()())
