@@ -83,7 +83,7 @@ frontend <- function(){
          shiny::conditionalPanel(
            condition = "input.checkUsing == 'SimilarityReport'",
 
-           shinyFiles::shinyFilesButton(id = "DownloadLocationReport",
+           shinyFiles::shinyDirButton(id = "DownloadLocationReport",
                                         label = 'Click to select a location to download report',
                                         title = 'Please select a location to download report',
                                         multiple = FALSE,
