@@ -158,9 +158,7 @@ backend <- function(input, output, session){
 
   output$downloadReport <- downloadHandler(
     filename = 'similarity-report.pdf',
-    # content = function(file) {
-    #   rmarkdown::render('report.Rmd', rmarkdown::pdf_document())
-    # }
+
     content = function(file) {
       print("Working Directory:")
       print(getwd())
