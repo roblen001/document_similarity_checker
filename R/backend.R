@@ -185,10 +185,12 @@ backend <- function(input, output, session){
   output$downloadReport <- downloadHandler(
     filename = 'similarity-report.pdf',
     content = function(file) {
-      devtools::install_git("https://github.com/dgJacks0n/envDocument", subdir="envDocument")
       print('Script Path')
-      print(get_scriptpath())
+      print(here())
+      print('working dir')
       print(getwd())
+      print('current script')
+      print(rstudioapi::getSourceEditorContext()$path)
       download_path =  shinyFiles::parseDirPath(volumes, input$DownloadLocationReport)
       src <- normalizePath(paste(download_path, '/app/shiny/R/report.rmd', sep = ""))
       # # temporarily switch to the temp dir, in case you do not have write
