@@ -41,12 +41,12 @@ backend <- function(input, output, session){
   observeEvent(
     input$DataframeProposalFile, {
       proposalDFPath <- shinyFiles::parseDirPath(volumes, input$DataframeProposalFile)
-      downloadPath <- shinyFiles::parseDirPath(volumes, input$DownloadLocationReport)
+      downloadPath <- shinyFiles::parseDirPath(volumes, input$DownloadLocationReportFile)
 
       # Reset output when selection of directory is canceled.
       output$DataframeProposalFileOutput <- shiny::renderText("No file selected.")
 
-      output$DownloadLocationReport <- shiny::renderText("No location to download report selected.")
+      output$DownloadLocationReportFile <- shiny::renderText("No location to download report selected.")
 
       # Otherwise if directory has been selected, print path of directory to screen.
       if (length(proposalDFPath) > 0){
