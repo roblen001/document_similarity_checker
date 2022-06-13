@@ -186,7 +186,7 @@ backend <- function(input, output, session){
     filename = 'similarity-report.pdf',
 
     content = function(file) {
-      download_path =  shinyFiles::parseFilePaths(volumes, input$DownloadLocationReport)
+      download_path =  shinyFiles::parseDirPath(volumes, input$DownloadLocationReport)
       print(getwd())
       print(download_path)
       src <- normalizePath(paste(download_path, '/R/report.rmd', sep = ""))
