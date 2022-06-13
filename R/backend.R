@@ -186,7 +186,8 @@ backend <- function(input, output, session){
     filename = 'similarity-report.pdf',
     content = function(file) {
       print('Script Path')
-      print(here())
+      library('here')
+      print(here::here())
       print('working dir')
       print(getwd())
       print('current script')
