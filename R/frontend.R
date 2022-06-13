@@ -84,8 +84,8 @@ frontend <- function(){
            condition = "input.checkUsing == 'SimilarityReport'",
 
            shinyFiles::shinyDirButton(id = "DownloadLocationReport",
-                                        label = 'Click to select a location to download report',
-                                        title = 'Please select a location to download report',
+                                        label = 'Click to select the location of "Proposal Similarity Checker" folder.',
+                                        title = 'Please select the location of the "Proposal Similarity Checker" folder.',
                                         multiple = FALSE,
                                         icon = shiny::icon("file")
            ),

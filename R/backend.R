@@ -36,7 +36,7 @@ backend <- function(input, output, session){
   output$DataframeProposalFileOutput <- shiny::renderText("No proposal dataframe file selected.")
 
   shinyFiles::shinyDirChoose(input, id = "DownloadLocationReport", roots = volumes)
-  output$DownloadLocationReportFile <- shiny::renderText("No location to download report selected.")
+  output$DownloadLocationReportFile <- shiny::renderText("No location selected.")
 
   #  FOR OTHER PROPOSAL SELECTION INPUT TYPE
   # 1) Select file containing proposal dataframe
@@ -187,9 +187,7 @@ backend <- function(input, output, session){
 
     content = function(file) {
       download_path =  shinyFiles::parseDirPath(volumes, input$DownloadLocationReport)
-      print(getwd())
-      print(download_path)
-      src <- normalizePath(paste(download_path, '/R/report.rmd', sep = ""))
+      src <- normalizePath(paste(download_path, '/app/shiny/R/report.rmd', sep = ""))
       # # temporarily switch to the temp dir, in case you do not have write
       # # permission to the current working directory
       owd <- setwd(tempdir())
