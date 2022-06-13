@@ -55,14 +55,6 @@ frontend <- function(){
 
             shiny::verbatimTextOutput("DataframeProposalFileOutput", placeholder = TRUE),
 
-            shinyFiles::shinyFilesButton(id = "DownloadLocationReport",
-                                         label = 'Click to select a location to download report',
-                                         title = 'Please select a location to download report',
-                                         multiple = FALSE,
-                                         icon = shiny::icon("file")
-            ),
-
-            shiny::verbatimTextOutput("DataframeProposalFileOutput", placeholder = TRUE),
 
             shiny::br(),
             shiny::conditionalPanel(condition = "input.checkUsing == 'ProposalId'",
@@ -90,6 +82,15 @@ frontend <- function(){
          # check using a similarity report
          shiny::conditionalPanel(
            condition = "input.checkUsing == 'SimilarityReport'",
+
+           shinyFiles::shinyFilesButton(id = "DownloadLocationReport",
+                                        label = 'Click to select a location to download report',
+                                        title = 'Please select a location to download report',
+                                        multiple = FALSE,
+                                        icon = shiny::icon("file")
+           ),
+
+           shiny::verbatimTextOutput("DownloadLocationReportFile", placeholder = TRUE),
 
            shiny::p('Using this checking method will produce a pdf report of newly
              submitted proposals against approved proposals'),
