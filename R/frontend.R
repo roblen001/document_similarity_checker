@@ -83,14 +83,14 @@ frontend <- function(){
          shiny::conditionalPanel(
            condition = "input.checkUsing == 'SimilarityReport'",
 
-           shinyFiles::shinyDirButton(id = "DownloadLocationReport",
-                                        label = 'Click to select the location of "Proposal Similarity Checker" folder.',
-                                        title = 'Please select the location of the "Proposal Similarity Checker" folder.',
-                                        multiple = FALSE,
-                                        icon = shiny::icon("file")
-           ),
+           # shinyFiles::shinyDirButton(id = "DownloadLocationReport",
+           #                              label = 'Click to select the location of "Proposal Similarity Checker" folder.',
+           #                              title = 'Please select the location of the "Proposal Similarity Checker" folder.',
+           #                              multiple = FALSE,
+           #                              icon = shiny::icon("file")
+           # ),
 
-           shiny::verbatimTextOutput("DownloadLocationReportFile", placeholder = TRUE),
+           # shiny::verbatimTextOutput("DownloadLocationReportFile", placeholder = TRUE),
 
            shiny::p('Using this checking method will produce a pdf report of newly
              submitted proposals against approved proposals'),
