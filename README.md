@@ -12,24 +12,6 @@ Additional information, documentation, and guides coming soon.
 
 <br>
 
-* I am currently dealing with a working directory issue to produce similarity reports. To solve the issue for now, you will need to download the zip file for the project.
-
-<img src='etc/download_zip.png'>
-
-<br>
-
-* Extract the folder by clicking the extract all button.
-
-<img src='etc/extract-all.png'>
-
-<br>
-
-* Then open the project by clicking the ProposalSimilarityChecker.Rproj and running the next lines in the opened console within Rstudio.
-
-<img src='etc/ProposalSimilarityChecker.png'>
-
-<br> 
-
 * Download and install the shiny app directly with the following lines of code:
 ```
   if (!require("devtools")){
